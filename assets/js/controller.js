@@ -20,8 +20,12 @@ function initMVC() {
 	console.log("initMVC");
 
 	// Initialize the model, view, and controller.
-
 	model.init();
+
+	// Run model unit tests for sanity.  We'll comment this out in production.
+	(model.unitTests()) ? console.log("model.unitTests() passed") : 
+	                      console.log("model.unitTests() failed");
+
 	vInit(model);
 	cInit();
 }
@@ -54,7 +58,10 @@ function cDemoSocrataExample() {
 	url = 'https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
 
 	// Intialize our map
-	var center = new google.maps.LatLng(41.7656874, -72.680087);
+	var geoCoord = model.getPlaceCoord("demo");
+	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
+
+	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
 	var mapOptions = {
 		zoom: 8,
 		center: center
