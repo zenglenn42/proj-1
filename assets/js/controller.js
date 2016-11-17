@@ -51,7 +51,7 @@ function cInit() {
 
 function cDemoSocrataExample() {
 	// Construct the catalog query string
-	url = 'http://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
+	url = 'https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
 
 	// Intialize our map
 	var center = new google.maps.LatLng(41.7656874, -72.680087);
