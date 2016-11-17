@@ -27,7 +27,7 @@ function initMVC() {
 	                      console.log("model.unitTests() failed");
 
 	vInit(model);
-	cInit();
+	cInit(model);
 }
 
 //---------------------------------------------------------------------------
@@ -40,7 +40,7 @@ function initMVC() {
 // Initializes the controller by registering various callback functions
 // that come to life in response to user input of some kind.
 
-function cInit() {
+function cInit(model) {
 	console.log("cInit");
 	cDemoSocrataExample();
 }
@@ -62,10 +62,7 @@ function cDemoSocrataExample() {
 	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
 
 	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
-	var mapOptions = {
-		zoom: 8,
-		center: center
-	}
+	var mapOptions = model.getMapOptions();
 	var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 	// Retrieve our data and plot it

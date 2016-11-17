@@ -14,18 +14,27 @@ var model = {
 			location: {
           		lat: 30.27504,
           		lng: -97.73855469999999
-        	}
-        },
+        	},
+        	mapOptions: {
+				zoom: 3,
+				center: "center"
+			}
+		},
         demo: { // Connecticut, from http://jsfiddle.net/chrismetcalf/8m2Cs/
 			location: {
 				lat: 41.7656874, 
 				lng: -72.680087
-       		}
+       		},
+        	mapOptions: {
+				zoom: 8,
+				center: "center"
+			}
         }
 	},
 
 	// model methods
 	getAppName: getAppName,
+	getMapOptions: getMapOptions,
 	getPlaceCoord: getPlaceCoord,
 	init: init,
 	unitTests: unitTests
@@ -49,6 +58,21 @@ function getAppName() {
 	return this.appName;
 }
 
+// Function getMapOptions
+// Usage: var mapOptions = getMapOptions(place);
+// ---------------------------------------------------------------------
+// Returns the google map options associated with a place known to
+// the model.
+
+function getMapOptions(place) {
+	console.log("model.getMapOptions");
+
+	var result = this.places[place].mapOptions;
+	if (!result) {
+		console.log("model.getMapOptions: Unknown place:", place);
+	}
+	return result;
+}
 
 // Function getPlaceCoord
 // Usage: var coord = getPlaceCoord(place);
