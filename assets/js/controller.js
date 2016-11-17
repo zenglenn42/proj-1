@@ -61,20 +61,31 @@ function cDemoSocrataExample() {
 	var geoCoord = model.getPlaceCoord("demo");
 	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
 
-	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
-	var mapOptions = model.getMapOptions();
-	var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	var zoomOption = model.getMapZoom("demo");
+	if (center === undefined) {
+		console.log("cDemoSocrataExample: Google maps api probably not getting loaded properly.");
+		return;
+	} else {
+		var mapOptions = {
+			zoom: zoomOption,
+			center: center
+		};
+		console.log(mapOptions);
 
-	// Retrieve our data and plot it
-	$.getJSON(url, function initMap(data, textstatus) {
-		console.log(data);
-		$.each(data, function(i, entry) {
-			var marker = new google.maps.Marker({
-					position: new google.maps.LatLng(entry.location_1.latitude, entry.location_1.longitude),
-					map: map,
-					title: location.name});
+		var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
+		var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+		// Retrieve our data and plot it
+		$.getJSON(url, function initMap(data, textstatus) {
+			console.log(data);
+			$.each(data, function(i, entry) {
+				var marker = new google.maps.Marker({
+						position: new google.maps.LatLng(entry.location_1.latitude, entry.location_1.longitude),
+						map: map,
+						title: location.name});
+			});
 		});
-	});
+	}
 }
 
 //---------------------------------------------------------------------------

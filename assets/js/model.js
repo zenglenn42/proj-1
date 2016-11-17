@@ -16,8 +16,7 @@ var model = {
           		lng: -97.73855469999999
         	},
         	mapOptions: {
-				zoom: 3,
-				center: "center"
+				zoom: 3
 			}
 		},
         demo: { // Connecticut, from http://jsfiddle.net/chrismetcalf/8m2Cs/
@@ -26,15 +25,14 @@ var model = {
 				lng: -72.680087
        		},
         	mapOptions: {
-				zoom: 8,
-				center: "center"
+				zoom: 8
 			}
         }
 	},
 
 	// model methods
 	getAppName: getAppName,
-	getMapOptions: getMapOptions,
+	getMapZoom: getMapZoom,
 	getPlaceCoord: getPlaceCoord,
 	init: init,
 	unitTests: unitTests
@@ -58,18 +56,18 @@ function getAppName() {
 	return this.appName;
 }
 
-// Function getMapOptions
-// Usage: var mapOptions = getMapOptions(place);
+// Function getMapZoom
+// Usage: var mapZoom = getMapZoom(place);
 // ---------------------------------------------------------------------
 // Returns the google map options associated with a place known to
 // the model.
 
-function getMapOptions(place) {
-	console.log("model.getMapOptions");
+function getMapZoom(place) {
+	console.log("model.getMapZoom");
 
-	var result = this.places[place].mapOptions;
+	var result = this.places[place].mapOptions.zoom;
 	if (!result) {
-		console.log("model.getMapOptions: Unknown place:", place);
+		console.log("model.getMapZoom: Unknown place:", place);
 	}
 	return result;
 }
