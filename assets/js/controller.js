@@ -26,17 +26,9 @@ function initMVC() {
 	cInit();
 }
 
-// Function: vInit
-// Usage: vInit(model);
-// --------------------
-// Initializes the view / presentation layer with data from the model.
-// Model data may include default settings in model.js as well as
-// data from persistent storage.
-
-function vInit(model) {
-	console.log("vInit");
-
-}
+//---------------------------------------------------------------------------
+// Controller Functions
+//---------------------------------------------------------------------------
 
 // Function: cInit
 // Usage: cInit();
@@ -46,4 +38,29 @@ function vInit(model) {
 
 function cInit() {
 	console.log("cInit");
+}
+
+//---------------------------------------------------------------------------
+// View Functions
+//---------------------------------------------------------------------------
+
+// Function: vInit
+// Usage: vInit(model);
+// --------------------
+// Initializes the view / presentation layer with data from the model.
+// Model data may include default settings in model.js as well as
+// data from persistent storage.
+
+function vInit(model) {
+	console.log("vInit");
+	vUpdateTitle(model.appName);
+}
+
+// Function: vUpdateTile
+// Usage: vUpdateTitle(model.appName);
+// -----------------------------------
+// Updates the view title from the model.
+
+function vUpdateTitle(nameStr) {
+	$("title").html(nameStr);
 }
