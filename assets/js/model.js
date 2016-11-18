@@ -157,14 +157,27 @@ function getMapHtmlClass() {
 }
 
 // Function: getMapHtmlId
-// Usage: var htmlID = getMapHtmlId(place);
+// Usage: var htmlID = getMapHtmlId(place [, dataSource]);
 // ---------------------------------------------------------------------
-// Returns the html map id corresponding to the place of interest.
+// Returns the html map id corresponding to the place of interest
+// and an optional data source.  Specifying the data source
+// would allow you to have separate div ids for a map of crime data
+// versus a map of traffic data.
+//
+// Excluding the dataSource would mean two or more data sources could
+// be sharing the same map div (i.e., data from both sources on the
+// same map).
 
-function getMapHtmlId(place) {
+function getMapHtmlId(place, dataSource) {
 	console.log("model.getMapHtmlId");
-
 	var result = place;
+
+	// Append optional dataSource if it is truthy. :-)
+	if (dataSource) {
+		// e.g., <div id="austin-crimeData">
+		//                ----------------
+		result += "-" + dataSource;
+	}
 	return result;
 }
 
