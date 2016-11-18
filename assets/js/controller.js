@@ -56,7 +56,7 @@ function cInit(model) {
 function cDemoSocrataExample() {
 	// Intialize our map for the "demo" place.
 
-	var place = "demo";
+	var place = "Austin";
 	var geoCoord = model.getPlaceCoord(place);
 	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
 
@@ -70,7 +70,7 @@ function cDemoSocrataExample() {
 		// Programmatically append a div for our demo map to our map container.
 		//$(".map-container").empty();
 		var mapDiv = vMakeMapDiv(place);
-		$(".map-container").append(mapDiv);
+		$("#map-container").append(mapDiv);
 
 		var mapOptions = {
 			zoom: model.getMapZoom(place),
@@ -81,7 +81,7 @@ function cDemoSocrataExample() {
 		var map = new google.maps.Map(document.getElementById(model.getMapHtmlId(place)), mapOptions);
 
 		// Construct the catalog query string
-		url = model.getEndpointUrl("demo", "schoolDistricts");
+		url = model.getEndpointUrl("Austin", "crimeData");
 
 		// Retrieve our data and plot it
 		$.getJSON(url, function initMap(data, textstatus) {

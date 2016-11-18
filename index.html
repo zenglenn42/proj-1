@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>This App Requires JavaScript</title>
+	
+	<!--Bootstrap-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!--Font Awesome map pin icon-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 	<!-- Load jQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 	<!-- Load a nice font -->
-	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Raleway:400,800" rel="stylesheet">
 
 	<!-- Load project styling. -->
 	<link href="assets/css/view.css" rel="stylesheet" type="text/css">
@@ -16,9 +23,33 @@
 <body>
 	<!-- This section plus related CSS constitute the view for the app. -->
 	<div class="container">
-		<h1>Hello, Connecticut?!</h1>
-		<div class="map-container">
+		<div class="jumbotron">
+			<h1 style="color: white"><i class="fa fa-map-marker fa-2x" aria-hidden="true"></i>
+			 Austin Aware</h1>
+		</div>
 			<!-- programmatically add map divs here -->
+		<div class="row">
+			<div class="col-6-sm" id="map-container">
+			<img src="http://placehold.it/640x480" alt="Map">
+			</div>
+			<!--Search buttons-->
+			<div class="col-2-sm">
+			<div class="dropdown">
+  				<button onclick="myFunction()" class="dropbtn" id="button1">Incident type</button>
+			</div>
+			</div>
+			<br>
+			<div class="col-2-sm">
+			<div class="dropdown">
+  				<button onclick="myFunction()" class="dropbtn" id="button2">Date</button>
+			</div>
+			</div>	
+			<br>
+			<div class="col-2-sm">
+			<div class="dropdown">
+  				<button onclick="myFunction()" class="dropbtn" id="button3">Zip Code</button>
+			</div>
+			</div>
 		</div>
 	</div>
 
