@@ -32,7 +32,10 @@ var model = {
 					apiKeyName: "",
 					apiKey: ""
 				}
-			}
+			},
+			city: "austin",
+			state: "texas",
+			stateAbbrev: "tx"
 		},
         demo: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
 			location: {
@@ -49,7 +52,10 @@ var model = {
 					apiKeyName: "",
 					apiKey: ""
 				}
-			}
+			},
+			city: "",
+			state: "connecticut",
+			stateAbbrev: "ct"
         }
 	},
 
@@ -57,10 +63,15 @@ var model = {
 	getAppName: getAppName,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
+	getFullAddress: getFullAddress,
+	getGeocodeLocation: getGeocodeLocation,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
 	getPlaceCoord: getPlaceCoord,
+	getCity: getCity,
+	getState: getState,
+	getStateAbbrev: getStateAbbrev,
 	init: init,
 	unitTests: unitTests
 };
@@ -81,6 +92,32 @@ function init() {
 
 function getAppName() {
 	return this.appName;
+}
+
+// Function: getCity
+// Usage: var place = "demo"; // This may or may not be a city
+//                            // It's basically a key under model.places
+//        var cityStr = model.getCity(place);
+// ---------------------------------------------------------------------
+// Returns the city as a string associated with a given place.
+//
+// This might be a useful token to then combine with a street address that
+// is missing city information.
+
+function getCity(place) {
+	console.log("model.getCity");
+	var result = undefined;
+
+	if (!this.places[place]) {
+		console.log("model.getCity: Invalid place: ", place);
+	}
+	else {
+		result = this.places[place].city;
+		if (!result) {
+			console.log("model.getCity: WARNING: No city value currently defined for place: ", place);
+		}
+	}
+	return result;
 }
 
 // Function: getEndpointUrl
@@ -111,6 +148,55 @@ function getEndpointUrl(place, dataSource) {
 		}
 		result = queryUrl + apiToken;
 	}
+	return result;
+}
+
+// Function: getGetFullAddress
+// Usage: var address = getFullAddress("austin", "2400 BLOCK E RIVERSIDE DR");
+// Returns: "2400 BLOCK E RIVERSIDE DR, austin, tx"
+//
+// TODO: Would be nice to have zipcode, but google gecoding is probably smart
+//       enough to resolve without.
+// --------------------------------------------------------------------------------
+// Returns the full(-ish) street address associated with a known place in
+// our object model.
+//
+// This could become input to a geocoding method that returns lat/lng for that address.
+
+function getFullAddress(place, streetAddress) {
+	console.log("model.getFullAddress");
+	var result = streetAddress;
+	if (!this.places[place]) {
+		console.log("model.getFullAddress: Invalid place: ", place);
+	} else {
+		var city = this.getCity(place);
+		if (city) {
+			result += "," + city;
+		}
+		var state = this.getState(place);
+		if (state) {
+			result += "," + state;
+		}
+	}
+	return result;
+}
+
+// Function: getGeocodeLocation
+// Usage: var location = getGeocodeLocation("austin", "2400 BLOCK E RIVERSIDE DR");
+// --------------------------------------------------------------------------------
+// Returns the latitiude and longitude for a given physical street address in
+// an object structured like this:
+//
+// 		location: {
+//			lat: 41.7656874, 
+//			lng: -72.680087
+//		}
+
+function getGeocodeLocation(place, streetAddress) {
+	console.log("model.getGeocodeLocation");
+	var result;
+	var fullAddress = this.getFullAddress(place, streetAddress);
+	// TODO: more code here that calls the endpoint for geocoding.
 	return result;
 }
 
@@ -212,6 +298,55 @@ function getPlaceCoord(place) {
 		console.log("model.getPlaceCoord: Unknown place:", place);
 	}
 	return result;
+}
+
+// Function: getState
+// Usage: var stateStr = model.getState("austin"); // returns "texas"
+//        var stateAbbrevStr = model.getState("austin", true); // returns "tx"
+// ---------------------------------------------------------------------------
+// Returns the state as a string associated with a given place.
+// Place must be a valid key within model.places, otherwise undefined is
+// returned and an error is console logged.
+//
+// User may specify the string to be optionally abbreviated down to a
+// two-character string through a second boolean parameter.
+//
+// This might be a useful token to then combine with a street address that
+// is missing state information.
+
+function getState(place, abbreviate) {
+	console.log("model.getState");
+	var result = undefined;
+
+	if (!this.places[place]) {
+		console.log("model.getState: Invalid place: ", place);
+	}
+	else {
+		if (abbreviate) {
+			result = this.places[place].stateAbbrev;
+			if (!result) {
+				console.log("model.getState: WARNING: no stateAbbrev value currently defined for place: ", place);
+			}
+		} else {
+			result = this.places[place].state;
+			if (!result) {
+				console.log("model.getState: WARNING: no state value currently defined for place: ", place);
+			}
+		}
+	}
+	return result;
+}
+
+// Function: getStateAbbrev
+// Usage: var stateAbbrevStr = getStateAbbrev("austin"); // returns tx
+// -------------------------------------------------------------------
+// Returns a two-letter string abbreviation of the state associated with
+// the place parameter.
+
+function getStateAbbrev(place) {
+	console.log("model.getStateAbbrev");
+	var abbreviate = true;
+	return this.getState(place, abbreviate);
 }
 
 // Function: unitTests
