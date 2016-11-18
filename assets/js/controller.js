@@ -54,26 +54,34 @@ function cInit(model) {
 // a json record fetched from endpoint.
 
 function cDemoSocrataExample() {
-	// Construct the catalog query string
-	url = 'https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
+	// Intialize our map for the "demo" place.
 
-	// Intialize our map
-	var geoCoord = model.getPlaceCoord("demo");
+	var place = "demo";
+	var geoCoord = model.getPlaceCoord(place);
 	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
 
-	var zoomOption = model.getMapZoom("demo");
+	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
+
 	if (center === undefined) {
 		console.log("cDemoSocrataExample: Google maps api probably not getting loaded properly.");
 		return;
 	} else {
+
+		// Programmatically append a div for our demo map to our map container.
+		$(".map-container").empty();
+		var mapDiv = vMakeMapDiv(place);
+		$(".map-container").append(mapDiv);
+
 		var mapOptions = {
-			zoom: zoomOption,
+			zoom: model.getMapZoom(place),
 			center: center
 		};
 		console.log(mapOptions);
 
-		var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
-		var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+		var map = new google.maps.Map(document.getElementById(model.getMapHtmlId(place)), mapOptions);
+
+		// Construct the catalog query string
+		url = 'https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
 
 		// Retrieve our data and plot it
 		$.getJSON(url, function initMap(data, textstatus) {
@@ -102,6 +110,21 @@ function cDemoSocrataExample() {
 function vInit(model) {
 	console.log("vInit");
 	vUpdateTitle(model.appName);
+}
+
+// Function: vMakeMapDiv
+// Usage: var mapDiv = vMakeMapDiv(place);
+// ---------------------------------------
+// Constructs a div suitable for holding a map.  The div is given a unique
+// id based upon the place string.
+//
+// e.g.  <div id="austin" class="map"></div>
+
+function vMakeMapDiv(place) {
+	var div = $("<div>");
+	$(div).attr("id", model.getMapHtmlId(place));
+	$(div).attr("class", model.getMapHtmlClass());
+	return div;
 }
 
 // Function: vUpdateTile

@@ -9,7 +9,7 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
- #map {
+ .map {
    height: 480px;
    width: 640px
  }

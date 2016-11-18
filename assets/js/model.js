@@ -16,7 +16,8 @@ var model = {
           		lng: -97.73855469999999
         	},
         	mapOptions: {
-				zoom: 3
+				zoom: 3 // Typically a number between 0 and 18
+						// https://developers.google.com/maps/documentation/javascript/maxzoom
 			}
 		},
         demo: { // Connecticut, from http://jsfiddle.net/chrismetcalf/8m2Cs/
@@ -32,6 +33,8 @@ var model = {
 
 	// model methods
 	getAppName: getAppName,
+	getMapHtmlClass: getMapHtmlClass,
+	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
 	getPlaceCoord: getPlaceCoord,
 	init: init,
@@ -54,6 +57,30 @@ function init() {
 
 function getAppName() {
 	return this.appName;
+}
+
+// Function getMapHtmlClass
+// Usage: var htmlClass = getMapHtmlClass();
+// ---------------------------------------------------------------------
+// Returns the html class for all of our map divs.
+
+function getMapHtmlClass() {
+	console.log("model.getMapHtmlClass");
+
+	var result = "map";
+	return result;
+}
+
+// Function getMapHtmlId
+// Usage: var htmlID = getMapHtmlId(place);
+// ---------------------------------------------------------------------
+// Returns the html map id corresponding to the place of interest.
+
+function getMapHtmlId(place) {
+	console.log("model.getMapHtmlId");
+
+	var result = place;
+	return result;
 }
 
 // Function getMapZoom
