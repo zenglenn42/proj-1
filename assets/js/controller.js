@@ -68,7 +68,7 @@ function cDemoSocrataExample() {
 	} else {
 
 		// Programmatically append a div for our demo map to our map container.
-		$(".map-container").empty();
+		//$(".map-container").empty();
 		var mapDiv = vMakeMapDiv(place);
 		$(".map-container").append(mapDiv);
 
@@ -81,7 +81,7 @@ function cDemoSocrataExample() {
 		var map = new google.maps.Map(document.getElementById(model.getMapHtmlId(place)), mapOptions);
 
 		// Construct the catalog query string
-		url = 'https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3';
+		url = model.getEndpointUrl("demo", "schoolDistricts");
 
 		// Retrieve our data and plot it
 		$.getJSON(url, function initMap(data, textstatus) {
