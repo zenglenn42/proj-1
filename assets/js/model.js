@@ -21,7 +21,10 @@ var model = {
 		austin: {
 			location: { // This is centered on the Capitol of Texas
           		lat: 30.27504,
-          		lng: -97.73855469999999
+          		lng: -97.73855469999999,
+				city: "austin",
+				state: "texas",
+				stateAbbrev: "tx"
         	},
         	mapOptions: {
 				zoom: 3 // Typically a number between 0 and 18
@@ -40,15 +43,15 @@ var model = {
 					apiKeyName: "",
 					apiKey: ""
 				}
-			},
-			city: "austin",
-			state: "texas",
-			stateAbbrev: "tx"
+			}
 		},
         demo: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
 			location: {
 				lat: 41.7656874, 
-				lng: -72.680087
+				lng: -72.680087,
+				city: "",
+				state: "connecticut",
+				stateAbbrev: "ct"
        		},
         	mapOptions: {
 				zoom: 8
@@ -60,10 +63,7 @@ var model = {
 					apiKeyName: "",
 					apiKey: ""
 				}
-			},
-			city: "",
-			state: "connecticut",
-			stateAbbrev: "ct"
+			}
         }
 	},
 
@@ -121,7 +121,7 @@ function getCity(place) {
 		console.log("model.getCity: Invalid place: ", place);
 	}
 	else {
-		result = this.places[place].city;
+		result = this.places[place].location.city;
 		if (!result) {
 			console.log("model.getCity: WARNING: No city value currently defined for place: ", place);
 		}
@@ -360,12 +360,12 @@ function getState(place, abbreviate) {
 	}
 	else {
 		if (abbreviate) {
-			result = this.places[place].stateAbbrev;
+			result = this.places[place].location.stateAbbrev;
 			if (!result) {
 				console.log("model.getState: WARNING: no stateAbbrev value currently defined for place: ", place);
 			}
 		} else {
-			result = this.places[place].state;
+			result = this.places[place].location.state;
 			if (!result) {
 				console.log("model.getState: WARNING: no state value currently defined for place: ", place);
 			}
