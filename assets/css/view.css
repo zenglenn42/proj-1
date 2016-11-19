@@ -6,10 +6,135 @@
 */
 
 body {
-	font-family: 'Lato', sans-serif;
+	font-family: 'Raleway', sans-serif;
+	background: #322046;
+}
+/*Map area*/
+ #map-container {
+   height: 480px;
+   width: 640px;
+   float: left;
+   padding: 20px;
+   margin: 20px;
+ }
+
+.map {
+    height: 480px;
+    width: 640px;
 }
 
- .map {
-   height: 480px;
-   width: 640px
+/*Title heading*/
+ h1 {
+ 	font-size: 70px;
  }
+
+.jumbotron {
+	text-align: center;
+    background-image: url("http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg");
+    opacity: 0.7;
+}
+/*Dropdown Button */
+.dropbtn {
+	background-color: #b295ba;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    width: 100px;
+}
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #6f5e85;
+}
+/*Container <div> to position dropdown content */
+.dropdown {
+	position: relative;
+    display: inline-block;
+    padding: 10px;
+    margin: 10px;
+}
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff0b8;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+
+/*Buttons*/
+#button1 {
+    padding: 15px;
+    margin-top: 20px;
+    width: 350px;
+}
+
+#button2 {
+    width: 350px;
+}
+
+#button3 {
+    width: 350px;
+}
+/*Media queries*/
+@media screen and (max-width: 768px) {
+    .dropdown {
+        margin-left: 120px;
+    }
+
+    #button1 {
+        width: 450px;
+    }
+
+    #button2 {
+        width: 450px;
+    }
+
+    #button3 {
+        width: 450px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    h1 {
+        font-size: 32px;
+    }
+
+    img {
+        width: 300px;
+        margin: 0px;
+        padding: 10px;
+    }
+
+    .dropdown {
+        margin: 2px;
+        padding: 5px;
+    }
+
+    #button1 {
+        width: 300px;
+    }
+
+    #button2 {
+        width: 300px;
+    }
+
+    #button3 {
+        width: 300px;
+    }
+}
