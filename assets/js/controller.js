@@ -42,7 +42,69 @@ function initMVC() {
 
 function cInit(model) {
 	console.log("cInit");
-	cDemoSocrataExample();
+	var map = cLoadMap(model, "austin");
+	//cDemoSocrataExample();
+}
+
+// Function: cLoadPlace
+// Usage: var map = cLoadPlace(model, "austin");
+// ---------------------------------------------
+// Fetch and render a google background map for a given place.
+//
+// The map object is returned for subsequent map api calls
+// for rendering markers, etc.
+
+function cLoadMap(model, place) {
+	console.log("cLoadMap");
+
+	// Sanity check the place before we go any farther.
+
+	if (!model.isKnownPlace(place)) {
+		console.log("cLoadPlace: Error: Unknown place: ", place);
+		return;
+	}
+
+	// Fetch the lat/lng of the center of the map.
+
+	var geoCoord = model.getPlaceCoord(place);
+	console.log("cLoadMap: geoCoord:", geoCoord);
+	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
+	if (center === undefined) {
+		console.log("cLoadMap: Error: Google maps api probably not getting loaded properly :-/");
+		return;
+	}
+
+	// Dynamically generate a container for our map and anchor
+	// it off a static html element already in the DOM.
+
+	var mapDiv = vMakeMapDiv(place);
+	var parentDiv = $(".map-container");
+	$(parentDiv).empty();
+	$(parentDiv).append(mapDiv);
+	// For some reason, I'm having to resort to direct DOM methods
+	// to get an element id that google maps is happy about.
+	//
+	// TODO: Fix this after higer priorities are resolved.
+	var mapDomNode = document.getElementById(model.getMapHtmlId(place));
+
+	// Load up some visualization settings for the map.
+	// Zoom level comes from the model.
+
+	var mapOptions = {
+		zoom: model.getMapZoom(place),
+		center: center
+	};
+	console.log(mapOptions);
+
+	// Fetch and render the map with our div.
+
+	var map = new google.maps.Map(mapDomNode, mapOptions);
+
+	// Pass the map back to the caller.  It'll get used
+	// by other parts of the app as a backdrop 
+	// (e.g., for location-specific marker data).
+
+	return map;
 }
 
 // Function: cDemoSocrataExample
@@ -56,7 +118,7 @@ function cInit(model) {
 function cDemoSocrataExample() {
 	// Intialize our map for the "demo" place.
 
-	var place = "Austin";
+	var place = "connecticut";
 	var geoCoord = model.getPlaceCoord(place);
 	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
 
@@ -68,20 +130,20 @@ function cDemoSocrataExample() {
 	} else {
 
 		// Programmatically append a div for our demo map to our map container.
-		//$(".map-container").empty();
+
 		var mapDiv = vMakeMapDiv(place);
-		$("#map-container").append(mapDiv);
+		$(".map-container").empty();
+		$(".map-container").append(mapDiv);
 
 		var mapOptions = {
 			zoom: model.getMapZoom(place),
 			center: center
 		};
 		console.log(mapOptions);
-
 		var map = new google.maps.Map(document.getElementById(model.getMapHtmlId(place)), mapOptions);
 
 		// Construct the catalog query string
-		url = model.getEndpointUrl("Austin", "crimeData");
+		url = model.getEndpointUrl(place, "schoolDistricts");
 
 		// Retrieve our data and plot it
 		$.getJSON(url, function initMap(data, textstatus) {
