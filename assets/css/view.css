@@ -18,6 +18,11 @@ body {
    margin: 20px;
  }
 
+.map {
+    height: 480px;
+    width: 640px;
+}
+
 /*Title heading*/
  h1 {
  	font-size: 70px;
