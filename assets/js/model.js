@@ -27,8 +27,9 @@ var model = {
 				stateAbbrev: "tx"
         	},
         	mapOptions: {
-				zoom: 3 // Typically a number between 0 and 18
-						// https://developers.google.com/maps/documentation/javascript/maxzoom
+				zoom: 11 // Good for city-level visualization.
+				         // Typically a number between 0 and 18
+				         // https://developers.google.com/maps/documentation/javascript/maxzoom
 			},
 			dataSources: {
 				crimeData: {
@@ -54,7 +55,7 @@ var model = {
 				stateAbbrev: "ct"
        		},
         	mapOptions: {
-				zoom: 8
+				zoom: 8		// Good state-level visualization.
 			},
 			dataSources: {
 				schoolDistricts: {
@@ -316,12 +317,15 @@ function getMapHtmlClass() {
 
 function getMapHtmlId(place, dataSource) {
 	console.log("model.getMapHtmlId");
-	var result = place;
+
+	// e.g., <div id="map-austin">
+	//                ----------
+	var result = "map" + "-" + place;
 
 	// Append optional dataSource if it is truthy. :-)
 	if (dataSource) {
-		// e.g., <div id="austin-crimeData">
-		//                ----------------
+		// e.g., <div id="map-austin-crimeData">
+		//                --------------------
 		result += "-" + dataSource;
 	}
 	return result;
