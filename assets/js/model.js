@@ -9,6 +9,14 @@
 var model = {
 	// model attributes
 	appName: "Austin Aware",
+	mapAPI: {
+		geocode: {
+			description: "Google Geocoding API", // Turns street address -> lat/lng.
+			queryUrl: "https://maps.googleapis.com/maps/api/geocode/json?",
+			apiKeyName: "key",
+			apiKey: "AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU"
+		}
+	},
 	places: {
 		austin: {
 			location: { // This is centered on the Capitol of Texas
@@ -63,8 +71,9 @@ var model = {
 	getAppName: getAppName,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
+	getEndpointUrlFromSelector: getEndpointUrlFromSelector,
 	getFullAddress: getFullAddress,
-	getGeocodeLocation: getGeocodeLocation,
+	getGeocodeEndpoint: getGeocodeEndpoint,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
@@ -106,7 +115,7 @@ function getAppName() {
 
 function getCity(place) {
 	console.log("model.getCity");
-	var result = undefined;
+	var result;
 
 	if (!this.places[place]) {
 		console.log("model.getCity: Invalid place: ", place);
@@ -120,21 +129,73 @@ function getCity(place) {
 	return result;
 }
 
+// Function: getDataSources
+// Usage var arrayDataSources = model.getDataSources("austin");
+// ------------------------------------------------------------
+// Returns an array of data source names for a given given location
+// known to the model.  Different cities may have differnt queryable endpoints.
+// This method tells you what those endpoints are.
+//
+// You can iterate over the list of data sources, passing each to 
+// model.getEndpointUrl() to fetch the corresponding endpoint url for
+// that data source.  Then you're just an ajax call away from getting data.
+
+function getDataSources(place) {
+	var result = [];
+	console.log("model.getDataSources");
+
+	if (!this.places[place]) {
+		console.log("model.getDataSources: Invalid place: ", place);
+	}
+	else {
+
+		// Iterate over the list of known data sources for this place
+		// and push them to the results array.
+
+		for (var dataSource in this.places[place].dataSources) {
+			result.push(dataSource);
+		}
+	}
+	return result;
+}
+
 // Function: getEndpointUrl
 // Usage: var url = getEndpointUrl("austin", "crimeData");
 // -------------------------------------------------------
 // This method retuns an endpoint url suitable for an AJAX call to a server
-// to fetch data.
+// to fetch data.  An optional 3rd parameter may be passed in if
+// additional query parameters need to be wedged in between the
+// query url and the key.
 
-function getEndpointUrl(place, dataSource) {
+function getEndpointUrl(place, dataSource, paramStr) {
 	console.log("model.getEndpointUrl");
-	var result = undefined;
+	var result;
 
 	if (!this.places[place]) {
 		console.log("model.getEndpointUrl: Invalid place: ", place);
 	}
 	else {
 		var selector = this.places[place].dataSources[dataSource];
+		result = this.getEndpointUrlFromSelector(selector, paramStr);
+	}
+	return result;
+}
+
+// Function: getEndpointUrlFromSelector
+// Usage: var url = getEndpointUrlFromSelector(model.places["austin"].dataSources["crimeData"]);
+// ------------------------------------------------------------------------------------------
+// The data for building an endpoint url from our model can come from multiple
+// places.  So this methods provides a generic way to address into a given
+// part of the object model and construct and url from the data it finds at that
+// node in the model.
+
+function getEndpointUrlFromSelector(selector, paramStr) {
+	console.log("model.getEndpointUrlFromSelector");
+	var result;
+
+	if (!selector) {
+		console.log("model.getEndpointUrlFromSelector: Invalid selector: ", selector);
+	} else {
 		var queryUrl = selector.queryUrl;
 		var apiKeyName = selector.apiKeyName;
 		var apiKey = selector.apiKey;
@@ -146,8 +207,14 @@ function getEndpointUrl(place, dataSource) {
 		if (apiKeyName && apiKey) {
 			apiToken = "&" + apiKeyName + "=" + apiKey;
 		}
-		result = queryUrl + apiToken;
+		if (paramStr) {
+			paramStr = paramStr.replace(/ /g, "+");
+			result = queryUrl + paramStr + apiToken;
+		} else {
+			result = queryUrl + apiToken;
+		}
 	}
+	console.log("model.getEndpointUrlFromSelector: result: ", result);
 	return result;
 }
 
@@ -181,52 +248,22 @@ function getFullAddress(place, streetAddress) {
 	return result;
 }
 
-// Function: getGeocodeLocation
-// Usage: var location = getGeocodeLocation("austin", "2400 BLOCK E RIVERSIDE DR");
-// --------------------------------------------------------------------------------
-// Returns the latitiude and longitude for a given physical street address in
-// an object structured like this:
+// Function: getGeocodeEndpoint
+// Usage: var geocodeEndpoint = model.getGeocodeEndpoint("austin", "7500 BLOCK DELAFIELD LN");
+// --------------------------------------------------------------------------------------
+// Returns a queryUrl loaded up with encoded street address and apikey,
+// ready for an AJAX call to Google's geocoding service.
 //
-// 		location: {
-//			lat: 41.7656874, 
-//			lng: -72.680087
-//		}
+// This is useful when we want to call the Google webapi to transform
+// a street address into a latitude and longitude pair.
 
-function getGeocodeLocation(place, streetAddress) {
-	console.log("model.getGeocodeLocation");
+function getGeocodeEndpoint(place, streetAddress) {
 	var result;
-	var fullAddress = this.getFullAddress(place, streetAddress);
-	// TODO: more code here that calls the endpoint for geocoding.
-	return result;
-}
+	console.log("model.getGeocodeEndpoint");
+	var fullStreetAddress = this.getFullAddress(place, streetAddress);
+	result = this.getEndpointUrlFromSelector(this.mapAPI.geocode, "address=" + fullStreetAddress);
+	console.log("model.getGeocodeEndpoint:", result);
 
-// Function: getDataSources
-// Usage var arrayDataSources = model.getDataSources("austin");
-// ------------------------------------------------------------
-// Returns an array of data source names for a given given location
-// known to the model.  Different cities may have differnt queryable endpoints.
-// This method tells you what those endpoints are.
-//
-// You can iterate over the list of data sources, passing each to 
-// model.getEndpointUrl() to fetch the corresponding endpoint url for
-// that data source.  Then you're just an ajax call away from getting data.
-
-function getDataSources(place) {
-	var result = [];
-	console.log("model.getDataSources");
-
-	if (!this.places[place]) {
-		console.log("model.getDataSources: Invalid place: ", place);
-	}
-	else {
-
-		// Iterate over the list of known data sources for this place
-		// and push them to the results array.
-
-		for (var dataSource in this.places[place].dataSources) {
-			result.push(dataSource);
-		}
-	}
 	return result;
 }
 
@@ -316,7 +353,7 @@ function getPlaceCoord(place) {
 
 function getState(place, abbreviate) {
 	console.log("model.getState");
-	var result = undefined;
+	var result;
 
 	if (!this.places[place]) {
 		console.log("model.getState: Invalid place: ", place);
@@ -356,10 +393,10 @@ function getStateAbbrev(place) {
 
 function unitTests() {
 	console.log("model.unitTests");
-	result = true;
+	var result = true;
 	
 	// First unit test.
-	coord = this.getPlaceCoord("austin");
+	var coord = this.getPlaceCoord("austin");
 	if (coord.lat !== 30.27504 || coord.lng !== -97.73855469999999) {
 		result = false;
 		console.log("model.unitTests: failed model.getPlaceCoord :-/");
@@ -375,11 +412,27 @@ function unitTests() {
 	}
 
 	// Third unit test.
+	var url = this.getEndpointUrlFromSelector(this.mapAPI.geocode);
+	if (url !== "https://maps.googleapis.com/maps/api/geocode/json?&key=AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU") {
+		result = false;
+		console.log("model.unitTests: failed model.getEndpointUrlFromSelector: ", url);
+	}
+
+	// Fourth unit test.
 	var url = this.getEndpointUrl("austin", "crimeData");
 	if (url !== "https://data.austintexas.gov/resource/rkrg-9tez.json") {
 		result = false;
 		console.log("model.unitTests: failed getEndpointUrl: ", url);
 	}
 
+	// Fifth unit test.
+	var endpoint = model.getGeocodeEndpoint("austin", "7500 BLOCK DELAFIELD LN");
+	if (endpoint !== "https://maps.googleapis.com/maps/api/geocode/json?address=7500+BLOCK+DELAFIELD+LN,austin,texas&key=AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU") {
+		result = false;
+		console.log("model.unitTests: failed model.getGeocodeEndpoint: ", endpoint);
+	}
+
 	return result;
 }
+
+//console.log("Did unit tests pass?", model.unitTests());
