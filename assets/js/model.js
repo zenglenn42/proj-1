@@ -45,7 +45,7 @@ var model = {
 				}
 			}
 		},
-        demo: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
+        connecticut: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
 			location: {
 				lat: 41.7656874, 
 				lng: -72.680087,
@@ -66,6 +66,9 @@ var model = {
 			}
         }
 	},
+	dynamic: {
+		knownPlaces: []
+	},
 
 	// model methods
 	getAppName: getAppName,
@@ -74,6 +77,7 @@ var model = {
 	getEndpointUrlFromSelector: getEndpointUrlFromSelector,
 	getFullAddress: getFullAddress,
 	getGeocodeEndpoint: getGeocodeEndpoint,
+	getKnownPlaces: getKnownPlaces,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
@@ -82,16 +86,21 @@ var model = {
 	getState: getState,
 	getStateAbbrev: getStateAbbrev,
 	init: init,
+	isKnownPlace: isKnownPlace,
+	setKnownPlaces: setKnownPlaces,
 	unitTests: unitTests
 };
 
 // Function: init
 // Usage: model.init();
 // --------------------
-// Initializes the model to a known state.
+// Initializes the model to a known state.  Guessing that once I know
+// more about javascript object patterns, this would just get morphed
+// into the constructor.
 
 function init() {
 	console.log("model.init");
+	this.setKnownPlaces();
 }
 
 // Function: getAppName
@@ -104,8 +113,8 @@ function getAppName() {
 }
 
 // Function: getCity
-// Usage: var place = "demo"; // This may or may not be a city
-//                            // It's basically a key under model.places
+// Usage: var place = "austin"; // This may or may not be a city
+//                              // It's basically a key under model.places
 //        var cityStr = model.getCity(place);
 // ---------------------------------------------------------------------
 // Returns the city as a string associated with a given place.
@@ -267,6 +276,20 @@ function getGeocodeEndpoint(place, streetAddress) {
 	return result;
 }
 
+// Function: getKnownPlaces
+// Usage: var arrayPlaces = model.getKnownPlaces();
+// ------------------------------------------------
+// Returns an sorted array of places known to the model.
+
+function getKnownPlaces() {
+	console.log("model.getKnownPlaces");
+	if (!this.dynamic.knownPlaces) {
+		console.log("model.getKnownPlaces: Don't know about any places :-/");
+		console.log("Guessing model.init() didn't get called.");
+	}
+	return this.dynamic.knownPlaces;
+}
+
 // Function: getMapHtmlClass
 // Usage: var htmlClass = getMapHtmlClass();
 // ---------------------------------------------------------------------
@@ -386,6 +409,40 @@ function getStateAbbrev(place) {
 	return this.getState(place, abbreviate);
 }
 
+// Function: isKnownPlace
+// Usage: if (model.isKnownPlace("timbuktu")) { ... }
+// --------------------------------------------------
+// Returns true if the given string (normalized to lower case)
+// matches one of the place keys known by the model.
+
+function isKnownPlace(placeStr) {
+
+	var nrmlPlaceStr = placeStr.toLowerCase();
+	var knownPlaces = this.getKnownPlaces();
+	var result = (knownPlaces.indexOf(nrmlPlaceStr) !== -1);
+	if (!result) {
+		console.log("model.isKnownPlace: Don't know about:", placeStr);
+	}
+	return result;
+}
+
+// Function: setKnownPlaces
+// Usage: var arrayPlaces = model.setKnownPlaces();
+// ---------------------------------------------------------------------
+// Have the model introspect itself to build a convenience array of valid
+// (sorted) places the model knows about.  This could be iterated over by a
+// controller to dynamically affect what the view knows how to display.
+
+function setKnownPlaces() {
+	var result = [];
+	for (var placeKey in model.places) {
+		result.push(placeKey);
+	}
+	result.sort();
+	this.dynamic.knownPlaces = result;
+	return result;
+}
+
 // Function: unitTests
 // Usage: if (model.unitTests()) console.log("model unit tests passed");
 // ---------------------------------------------------------------------
@@ -432,7 +489,31 @@ function unitTests() {
 		console.log("model.unitTests: failed model.getGeocodeEndpoint: ", endpoint);
 	}
 
+	// Sixth unit test.
+	this.setKnownPlaces();
+	var expectedPlaces = ["austin", "connecticut"];
+	var actualPlaces = this.getKnownPlaces();
+	if (actualPlaces.sort().join(',') !== expectedPlaces.sort().join(',')) {
+		result = false;
+		console.log("model.unitTests: failed setKnownPlaces");
+		console.log("   expected:", expectedPlaces);
+		console.log("   actual:", actualPlaces);
+	}
+
+	// Seventh unit test.
+	if (!this.isKnownPlace("austin") || !this.isKnownPlace("Austin")) {
+		result = false;
+		console.log("model.unitTests: failed isKnownPlace on Austin!");
+		console.log("model.unitTests: I should totally know about Austin, yo.  Fix me.");
+	}
+	if (this.isKnownPlace("timbuktu")) {
+		result = false;
+		console.log("model.unitTests: failed isKnownPlace");
+		console.log("model.unitTests: I really shouldn't know about timbuktu and yet I say I do.");
+	}
+
 	return result;
 }
 
-//console.log("Did unit tests pass?", model.unitTests());
+// Uncomment this when bench-testing the model off to the side.
+// console.log("Did unit tests pass?", model.unitTests());
