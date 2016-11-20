@@ -42,20 +42,61 @@ function initMVC() {
 
 function cInit(model) {
 	console.log("cInit");
-	var map = cLoadMap(model, "austin");
-	//cDemoSocrataExample();
+	var map = loadMap(model, "austin");
+	loadData(model, "austin", "trafficData");
 }
 
-// Function: cLoadPlace
-// Usage: var map = cLoadPlace(model, "austin");
+// Function: loadData
+// Usage: loadData(model, "austin", "trafficData");
+// ------------------------------------------------
+// Loads data from the data source into the model.
+
+function loadData(model, place, dataSource) {
+	console.log("loadData");
+	var dataSourceUrl = model.getEndpointUrl(place, dataSource);
+	if (!dataSourceUrl) {
+		console.log("loadData: endpoint url is null for place: " + place + " and dataSource: " + dataSource);
+		return false;
+	}
+
+	// Retrieve raw JSON data from the endpoint and
+	// display it on the screen for debug purposes.
+	
+	$.getJSON(dataSourceUrl, showJsonObj);
+}
+
+// Function: dumpJsonData
+// Usage: $.getJSON(endpointUrl, showJsonObj);
+// -------------------------------------------
+// Takes the incoming JSON data from a web api call, turns it into a string
+// and displays it in a div created on the fly and appened to the end of
+// the container div.
+
+function showJsonObj(jsonObj, textstatus) {
+	var div = $("<div>");
+	$(div).attr("id", "raw-data");
+	$(div).css({
+		"color": "white", 
+		"background-color": "gray",
+		"overflow": "scroll",
+		"width": "100%",
+		"height": "200px"
+	});
+	$(".container").append(div);
+
+	$(div).text(JSON.stringify(jsonObj));
+}
+
+// Function: loadPlace
+// Usage: var map = loadPlace(model, "austin");
 // ---------------------------------------------
 // Fetch and render a google background map for a given place.
 //
 // The map object is returned for subsequent map api calls
 // for rendering markers, etc.
 
-function cLoadMap(model, place) {
-	console.log("cLoadMap");
+function loadMap(model, place) {
+	console.log("loadMap");
 
 	// Sanity check the place before we go any farther.
 
@@ -67,10 +108,10 @@ function cLoadMap(model, place) {
 	// Fetch the lat/lng of the center of the map.
 
 	var geoCoord = model.getPlaceCoord(place);
-	console.log("cLoadMap: geoCoord:", geoCoord);
+	console.log("loadMap: geoCoord:", geoCoord);
 	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
 	if (center === undefined) {
-		console.log("cLoadMap: Error: Google maps api probably not getting loaded properly :-/");
+		console.log("loadMap: Error: Google maps api probably not getting loaded properly :-/");
 		return;
 	}
 

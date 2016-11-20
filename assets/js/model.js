@@ -68,7 +68,18 @@ var model = {
         }
 	},
 	dynamic: {
-		knownPlaces: []
+		knownPlaces: [],
+		places: {
+			location: {
+				austin: {
+					crimeData: [],
+					trafficData: []
+				},
+				connecticut: {
+					schoolDistricts: []
+				}
+			}	
+		}
 	},
 
 	// model methods
