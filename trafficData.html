@@ -1,0 +1,29 @@
+<html>
+<head>
+</head>
+<body>
+
+<div>List</div>
+	<script src='http://code.jquery.com/jquery-2.1.3.min.js'></script>
+	<script src='AAware.js'></script>
+	<script>
+
+var key = "g9GkfcLndwliKunxNyYve0Nnv";
+
+var queryURL = "https://data.austintexas.gov/resource/s88d-6sad.json?$$app_token=" + key;
+
+$.ajax({url:queryURL, method: "GET"}).done(function(response){
+		
+	console.log(response);
+
+	for( var i=0; i<response.length; i++){
+		
+		var address = response[i].location;
+		$("div").append(address);
+	
+		
+		};
+});
+</script>
+</body>
+</html>
