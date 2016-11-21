@@ -101,6 +101,7 @@ var model = {
 	},
 
 	// model methods
+	filterAddress: filterAddress,
 	getAppName: getAppName,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
@@ -121,16 +122,26 @@ var model = {
 	unitTests: unitTests
 };
 
-// Function: init
-// Usage: model.init();
-// --------------------
-// Initializes the model to a known state.  Guessing that once I know
-// more about javascript object patterns, this would just get morphed
-// into the constructor.
+// Function: filterAddress
+// Usage: var betterAddress = filterAddress(rawStreeAddress);
+// ----------------------------------------------------------
+// Returns a street addressed which has been stripped of unhelpful
+// (to Google Maps Geocode API) strings, like "NB" for north bound.
+// This is terminology that law enforcement understands, but
+// confuses the geocode API to the point that it aliases the
+// street address to simply the city in which the street resides.
+//
+// TODO: We may want to configure this as a callback for a particular
+//       data source rather than applying it to all addresses.
 
-function init() {
-	console.log("model.init");
-	this.setKnownPlaces();
+function filterAddress(rawAddress) {
+	// filter out _NB_
+	var result = rawAddress.replace(/\s[NSEW]B[\s$]/, ' ');
+
+	// filter out _NB<end-of-string>
+	result = result.replace(/\s[NSEW]B$/, '');
+
+	return result;
 }
 
 // Function: getAppName
@@ -271,7 +282,9 @@ function getEndpointUrlFromSelector(selector, paramStr) {
 
 function getFullAddress(place, streetAddress) {
 	console.log("model.getFullAddress");
-	var result = streetAddress;
+
+	// Strip off north bound (NB) tokens that confuse geocode api.
+	var result = filterAddress(streetAddress);
 	if (!this.places[place]) {
 		console.log("model.getFullAddress: Invalid place: ", place);
 	} else {
@@ -442,6 +455,18 @@ function getStateAbbrev(place) {
 	return this.getState(place, abbreviate);
 }
 
+// Function: init
+// Usage: model.init();
+// --------------------
+// Initializes the model to a known state.  Guessing that once I know
+// more about javascript object patterns, this would just get morphed
+// into the constructor.
+
+function init() {
+	console.log("model.init");
+	this.setKnownPlaces();
+}
+
 // Function: isKnownPlace
 // Usage: if (model.isKnownPlace("timbuktu")) { ... }
 // --------------------------------------------------
@@ -543,6 +568,14 @@ function unitTests() {
 		result = false;
 		console.log("model.unitTests: failed isKnownPlace");
 		console.log("model.unitTests: I really shouldn't know about timbuktu and yet I say I do.");
+	}
+
+	// Eighth unit test.
+	if (this.filterAddress("5700 blk S Mopac NB") !== "5700 blk S Mopac"       ||
+		this.filterAddress("W US 290 EB to S Mopac") !== "W US 290 to S Mopac" ||
+		this.filterAddress("123 EBBandFlow Drive") !== "123 EBBandFlow Drive") {
+		result = false;
+		console.log("model.unitTests: failed filterAddress");
 	}
 
 	return result;
