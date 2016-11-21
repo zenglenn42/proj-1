@@ -109,6 +109,45 @@ body {
         width: 450px;
     }
 }
+/*tablet landscape viewport*/
+@media screen and (min-width: 768px)
+            and (max-width: 1024px)
+            and (orientation: landscape) {
+    .dropdown {
+        margin-left: 186px;
+    }
+
+    #map-container {
+        padding: 10px;
+        margin: 10px;
+        margin-left: 40px;
+    }
+
+}
+/*Phone landscape viewport*/
+@media screen 
+  and (device-width: 320px) 
+  and (device-height: 640px) 
+  and (-webkit-device-pixel-ratio: 2) 
+  and (orientation: landscape) {
+
+    h1 {
+        font-size: 50px;
+    }
+
+    #map-container {
+        margin-left: 10px;
+        width: 450px;
+    }
+
+    .map {
+        width: 450px;
+    }
+    
+    .dropdown {
+        margin-left: 10px;
+    }
+  }
 
 @media screen and (max-width: 468px) {
     h1 {
