@@ -13,7 +13,7 @@ var model = {
 		geocode: {
 			description: "Google Geocoding API", // Turns street address -> lat/lng.
 			queryUrl: "https://maps.googleapis.com/maps/api/geocode/json?",
-			apiKeyName: "key",
+			apiKeyName: "&key",
 			apiKey: "AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU"
 		}
 	},
@@ -43,6 +43,24 @@ var model = {
 					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json",
 					apiKeyName: "",
 					apiKey: ""
+				},
+				trafficFatalities2015: {
+					description: "2015 Austin Traffic Fatalities",
+					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+				},
+				trafficFatalities2016: {
+					description: "2016 Austin Traffic Fatalities",
+					queryUrl: "https://data.austintexas.gov/resource/s88d-6sad.json",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+				},
+				trafficSignalsOnFlash: {
+					description: "Traffic Signals on Flash",
+					queryUrl: "https://data.austintexas.gov/resource/utgi-umz5.json",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
 				}
 			}
 		},
@@ -226,7 +244,7 @@ function getEndpointUrlFromSelector(selector, paramStr) {
 		// data source.
 
 		if (apiKeyName && apiKey) {
-			apiToken = "&" + apiKeyName + "=" + apiKey;
+			apiToken = apiKeyName + "=" + apiKey;
 		}
 		if (paramStr) {
 			paramStr = paramStr.replace(/ /g, "+");
@@ -476,7 +494,7 @@ function unitTests() {
 
 	// Second unit test.
 	var dataSources = this.getDataSources("austin");
-	if (dataSources.length !== 2) {
+	if (dataSources.length !== 5) {
 		result = false;
 		console.log("model.unitTests: failed model.getDataSources");
 	} else {
