@@ -16,13 +16,62 @@ $.ajax({url:queryURL, method: "GET"}).done(function(response){
 		
 	console.log(response);
 
-	for( var i=0; i<response.length; i++){
+	var skippedRecords = 0;
+	for( var i=0; i<response.length; i++) {
 		
-		var address = response[i].location;
-		$("div").append(address);
+		var rawAddress = response[i].location;
+		if (rawAddress === undefined) {
+			console.log("Undefined address returned for traffic record:", i);
+			console.log("skipping that record");
+			++skippedRecords;
+			continue;
+		}
+
+		var address = rawAddress.replace(/\s[NSEW]B[\s$]/, ' ');
+		address = address.replace(/\s[NSEW]B$/, '');
+		var geocodeUrl = model.getGeocodeEndpoint("austin", address);
+		console.log(geocodeUrl);
+		
+		$("div").append("<p>" + address + "</p>");
+		$("div").append("<p>" + geocodeUrl + "</p>");
 	
-		
-		};
+		$.ajax({url:geocodeUrl, method: "GET"}).done(function(response){
+			if (response.status.toUpperCase() === "OK") {
+				var partialMatch = response.results[0].partial_match;
+				var formattedAddress = response.results[0].formatted_address;
+				var zip;
+				for (var i = 0; i < 2; i++) {
+					if (response.results[i].address_components) {
+						type6 = response.results[i].address_components[6].types[0];
+						if (type6 === "postal_code") {
+							zip = response.results[i].address_components[6].long_name;
+							break;
+						} else if (response.results[i].address_components[7]) {
+							type7 = response.results[i].address_components[7].types[0];
+							if (type7 === "postal_code") {
+								zip = response.results[i].address_components[7].long_name;
+								break;
+							} 
+						}
+					}
+				}
+				var lat = response.results[0].geometry.location.lat;
+				var lng = response.results[0].geometry.location.lng;
+				console.log(address);
+				console.log("partialMatch:", partialMatch);
+				console.log("formattedAddress", formattedAddress);
+				console.log("zip", zip);
+				console.log("lat", lat);
+				console.log("lng", lng);
+			} else {
+				console.log("bad status back from geocode api call");
+			}
+		});
+	}
+	if (skippedRecords > 0) {
+		console.log("Skipped " + skippedRecords + " of " + 
+			response.length + " records due to bad address in input data.");
+	}
 });
 </script>
 </body>
