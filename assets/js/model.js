@@ -135,12 +135,16 @@ var model = {
 //       data source rather than applying it to all addresses.
 
 function filterAddress(rawAddress) {
-	// filter out _NB_
-	var result = rawAddress.replace(/\s[NSEW]B[\s$]/, ' ');
-
-	// filter out _NB<end-of-string>
-	result = result.replace(/\s[NSEW]B$/, '');
-
+	console.log("model.filterAddress");
+	var result;
+	if (rawAddress) {
+		// filter out _NB_
+		// filter out _NB<end-of-string>
+		// filter out Svrd (service rd).
+		result = rawAddress.replace(/\s[NSEW]B[\s$]/, ' ').replace(/\s[NSEW]B$/, '').replace(/\sSvrd/, '');
+	} else {
+		console.log("model.rawAddress: Warning: Encountered empty input parameter. :-/");
+	}
 	return result;
 }
 
@@ -282,19 +286,32 @@ function getEndpointUrlFromSelector(selector, paramStr) {
 
 function getFullAddress(place, streetAddress) {
 	console.log("model.getFullAddress");
+	var result;
 
-	// Strip off north bound (NB) tokens that confuse geocode api.
-	var result = filterAddress(streetAddress);
 	if (!this.places[place]) {
 		console.log("model.getFullAddress: Invalid place: ", place);
 	} else {
-		var city = this.getCity(place);
-		if (city) {
-			result += "," + city;
-		}
-		var state = this.getState(place);
-		if (state) {
-			result += "," + state;
+		// Strip off north bound (NB) tokens that confuse geocode api.
+		result = filterAddress(streetAddress);
+
+		// Only append city and state if filtered street address
+		// is sane.  Generally it is better to return an undefined
+		// address in this case as opposed to:
+		//
+		//    "undefined,austin,tx"
+		//
+		// The caller is confused into think he has something non-trivial
+		// to pass to the geocoding API.
+
+		if (result) {
+			var city = this.getCity(place);
+			if (city) {
+				result += "," + city;
+			}
+			var state = this.getState(place);
+			if (state) {
+				result += "," + state;
+			}
 		}
 	}
 	return result;
