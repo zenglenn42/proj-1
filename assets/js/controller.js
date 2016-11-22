@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------
 
 $(document).ready(initMVC);
+$('.selectpicker').selectpicker();
 
 // Function: initMVC
 // Usage: $(document).ready(initMVC);
@@ -50,6 +51,7 @@ function cInit(model) {
 
 	// This dataSource requires geocode throttleling. :-/
 	// loadData(map, model, "austin", "trafficData");
+	mapStatus(model, "austin", "trafficFatalities2016");
 }
 
 // Function: loadData
@@ -369,18 +371,26 @@ function vUpdateTitle(nameStr) {
 //Usage: mapStatus();
 //-------------------
 //Provide status information regarding the data points on the map.
-function mapStatus() {
+function mapStatus(model, place, dataSource) {
 //Define text area.
-
+	
 	var textArea = $("<div>");
-	$("div").attr("id", "map-status");
+	$(textArea).attr("id", "map-status");
 
 	//Make text area read-only. Add it to the div.
 
-	document.getElementById("map-status").readOnly = true;
-	$(".map-container").append(div);
-
+	$(".map-container").append(textArea);
+console.log(model);
 	//Add content to text area.
-	
+	var url = model.getEndpointUrl(place, dataSource);
+	$(textArea).html("Source: " + url);
 
 }
+
+// Function: dropdown menu enabler
+//Source: http://stackoverflow.com/questions/17941749/bootstrap-select-not-working
+//-----------------------
+//Enable dropdown menus to work
+ $( function() {
+       $('.selectpicker').selectpicker();
+    })

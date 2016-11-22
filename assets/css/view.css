@@ -22,7 +22,9 @@ body {
     height: 480px;
     width: 640px;
 }
-
+#map-status {
+    color: white;
+}
 /*Title heading*/
  h1 {
  	font-size: 70px;
@@ -84,13 +86,6 @@ body {
     width: 350px;
 }
 
-#button2 {
-    width: 350px;
-}
-
-#button3 {
-    width: 350px;
-}
 /*Media queries*/
 @media screen and (max-width: 768px) {
     .dropdown {
@@ -98,14 +93,6 @@ body {
     }
 
     #button1 {
-        width: 450px;
-    }
-
-    #button2 {
-        width: 450px;
-    }
-
-    #button3 {
         width: 450px;
     }
 }
@@ -170,14 +157,6 @@ body {
     #button1 {
         width: 400px;
     }
-
-    #button2 {
-        width: 400px;
-    }
-
-    #button3 {
-        width: 400px;
-    }
 }
 
 @media screen and (max-width: 320px) {
@@ -202,14 +181,6 @@ body {
     }
 
     #button1 {
-        width: 300px;
-    }
-
-    #button2 {
-        width: 300px;
-    }
-
-    #button3 {
         width: 300px;
     }
 }
