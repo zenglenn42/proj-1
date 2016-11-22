@@ -43,7 +43,29 @@ function initMVC() {
 function cInit(model) {
 	console.log("cInit");
 	var map = loadMap(model, "austin");
-	loadData(model, "austin", "trafficData");
+	loadData(map, model, "austin", "trafficData");
+}
+
+function geocodeAddress(geocoder, address, resultsMap) {
+	if (address) {
+		console.log("geocodeAddress:", address);
+	    geocoder.geocode({'address': address}, function(results, status) {
+	      if (status === 'OK') {
+	        //resultsMap.setCenter(results[0].geometry.location);
+	        var marker = new google.maps.Marker({
+	          map: resultsMap,
+	          position: results[0].geometry.location
+	        });
+	      } else {
+	      	console.log("Geocode was not successful for the following reason: " + status);
+	      	console.log("Failed on this address: ", address);
+	        //alert('Geocode was not successful for the following reason: ' + status);
+	      }
+	    });
+	} else {
+		console.log("geocodeAddress: ignoring non-truthy address: ", address);
+		console.log("otherwise we'll trigger google geocodes api limiter");
+	}
 }
 
 // Function: loadData
@@ -51,7 +73,7 @@ function cInit(model) {
 // ------------------------------------------------
 // Loads data from the data source into the model.
 
-function loadData(model, place, dataSource) {
+function loadData(map, model, place, dataSource) {
 	console.log("loadData");
 	var dataSourceUrl = model.getEndpointUrl(place, dataSource);
 	if (!dataSourceUrl) {
@@ -62,7 +84,35 @@ function loadData(model, place, dataSource) {
 	// Retrieve raw JSON data from the endpoint and
 	// display it on the screen for debug purposes.
 	
-	$.getJSON(dataSourceUrl, showJsonObj);
+	geocoder = new google.maps.Geocoder();
+
+	$.getJSON(dataSourceUrl, function(response) {
+	 	for(var i = 0; i < response.length; i++) {
+	 		var rawAddress = response[i].location;
+	 		var address = model.getFullAddress(place, rawAddress);
+	 		if (address) {
+	 			console.log("loadData: truthy i hope? ", address);
+
+				// TODO: Do we need to throttle our geocode calls to avoid an OVER_QUERY_LIMIT error?
+				//
+				// http://stackoverflow.com/questions/2419219/how-do-i-geocode-20-addresses-without-receiving-an-over-query-limit-response
+				// http://gis.stackexchange.com/questions/15052/how-to-avoid-google-map-geocode-limit
+				// https://developers.google.com/maps/documentation/geocoding/geocoding-strategies
+				// https://developers.google.com/maps/documentation/javascript/firebase
+				// http://stackoverflow.com/questions/19640055/multiple-markers-google-map-api-v3-from-array-of-addresses-and-avoid-over-query
+				// http://econym.org.uk/gmap/geomulti.htm
+
+				geocodeAddress(geocoder, address, map);
+
+			} else {
+				console.log("loadData: skipping undefined address: ", rawAddress);
+			}
+	 	}
+	 });
+}
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Function: dumpJsonData
@@ -146,6 +196,22 @@ function loadMap(model, place) {
 	// (e.g., for location-specific marker data).
 
 	return map;
+}
+
+function getCoordinates(address) {
+	console.log("getCoordinates: address", address);
+	var coordinates;
+	geocoder.geocode({address: address}, function(results, stats) {
+		console.log(typeof results);
+		console.log(results);
+		if (results) {
+			coordinates = results[0].geometry.location;
+		} else {
+			console.log("getCoordinates: null results for this address: ", address);
+		}
+	});
+	console.log(coordinates);
+	return coordinates;
 }
 
 // Function: cDemoSocrataExample
