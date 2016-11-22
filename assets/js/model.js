@@ -53,8 +53,12 @@ var model = {
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
 					queryUrl: "https://data.austintexas.gov/resource/vn6k-4eq5.json",
-					apiKeyName: "$$app_token",
-					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+					apiKeyName: "",
+					apiKey: ""
+					// Huh, seems to work with out app_token.  Getting 404 otherwise.
+					//
+					//apiKeyName: "$$app_token",
+					//apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",

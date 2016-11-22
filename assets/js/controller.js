@@ -43,7 +43,106 @@ function initMVC() {
 function cInit(model) {
 	console.log("cInit");
 	var map = loadMap(model, "austin");
-	loadData(map, model, "austin", "trafficData");
+
+	// This data already has lat/lng baked in and so doesn't
+	// hit the geocode bottleneck.
+	loadData(map, model, "austin", "trafficFatalities2016");
+
+	// This dataSource requires geocode throttleling. :-/
+	// loadData(map, model, "austin", "trafficData");
+}
+
+// Function: loadData
+// Usage: loadData(model, "austin", "trafficData");
+// ------------------------------------------------
+// Loads data from the data source into the model.
+
+function loadData(map, model, place, dataSource) {
+	console.log("loadData");
+	var dataSourceUrl = model.getEndpointUrl(place, dataSource);
+	if (!dataSourceUrl) {
+		console.log("loadData: endpoint url is null for place: " + place + " and dataSource: " + dataSource);
+		return false;
+	}
+
+	if (dataSource == "trafficFatalities2016") {
+		var position;
+		$.getJSON(dataSourceUrl, function(response) {
+			$.each(response, function(i, entry) {
+				position = new google.maps.LatLng(entry.y_coord, entry.x_coord);
+				/*
+					{
+						"area": "HE",
+						"case_number": "16-0140992",
+						"case_status": "Closed",
+						"charge": "N/A",
+						"date": "2016-01-14T00:00:00.000",
+						"day": "Thu",
+						"dl_status_incident": "okay",
+						"fatal_crash": "2",
+						"ftsra": "n",
+						"hour": "14",
+						"impaired_type": "UNK",
+						"killed_driver_pass": "n/a",
+						"location": "4800 E. Riverside Dr.",
+						"month": "Jan",
+						"of_fatalities": "1",
+						"ran_red_light_or_stop_sign": "N",
+						"related": "MV/Ped",
+						"restraint_helmet": "n/a",
+						"speeding": "N",
+						"time": "14:46",
+						"type": "Pedestrian",
+						"type_of_road": "high use roadway",
+						"x_coord": "-97.717471000000003",
+						"y_coord": "30.231659000000001"
+					}
+				*/
+
+				// Add some interesting hover data as a 'title' for each marker that 
+				// says a little about the circumstances of the fataility.
+
+				var date = entry.date.replace(/T00:00:00.000/, '');
+				if (entry.charge.toLowerCase() == "n/a") {
+					title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+				} else {
+					title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+				}
+				console.log(title);
+				placeMarker(map, position, title);
+
+			});
+		});
+	} else {
+		// Retrieve raw JSON data from the endpoint and
+		// display it on the screen for debug purposes.
+		
+		geocoder = new google.maps.Geocoder();
+
+		$.getJSON(dataSourceUrl, function(response) {
+		 	for (var i = 0; i < response.length; i++) {
+		 		var rawAddress = response[i].location;
+		 		var address = model.getFullAddress(place, rawAddress);
+		 		if (address) {
+		 			console.log("loadData: truthy i hope? ", address);
+
+					// TODO: Do we need to throttle our geocode calls to avoid an OVER_QUERY_LIMIT error?
+					//
+					// http://stackoverflow.com/questions/2419219/how-do-i-geocode-20-addresses-without-receiving-an-over-query-limit-response
+					// http://gis.stackexchange.com/questions/15052/how-to-avoid-google-map-geocode-limit
+					// https://developers.google.com/maps/documentation/geocoding/geocoding-strategies
+					// https://developers.google.com/maps/documentation/javascript/firebase
+					// http://stackoverflow.com/questions/19640055/multiple-markers-google-map-api-v3-from-array-of-addresses-and-avoid-over-query
+					// http://econym.org.uk/gmap/geomulti.htm
+
+					geocodeAddress(geocoder, address, map);
+
+				} else {
+					console.log("loadData: skipping undefined address: ", rawAddress);
+				}
+		 	}
+		});
+	}
 }
 
 function geocodeAddress(geocoder, address, resultsMap) {
@@ -68,51 +167,12 @@ function geocodeAddress(geocoder, address, resultsMap) {
 	}
 }
 
-// Function: loadData
-// Usage: loadData(model, "austin", "trafficData");
-// ------------------------------------------------
-// Loads data from the data source into the model.
-
-function loadData(map, model, place, dataSource) {
-	console.log("loadData");
-	var dataSourceUrl = model.getEndpointUrl(place, dataSource);
-	if (!dataSourceUrl) {
-		console.log("loadData: endpoint url is null for place: " + place + " and dataSource: " + dataSource);
-		return false;
-	}
-
-	// Retrieve raw JSON data from the endpoint and
-	// display it on the screen for debug purposes.
-	
-	geocoder = new google.maps.Geocoder();
-
-	$.getJSON(dataSourceUrl, function(response) {
-	 	for(var i = 0; i < response.length; i++) {
-	 		var rawAddress = response[i].location;
-	 		var address = model.getFullAddress(place, rawAddress);
-	 		if (address) {
-	 			console.log("loadData: truthy i hope? ", address);
-
-				// TODO: Do we need to throttle our geocode calls to avoid an OVER_QUERY_LIMIT error?
-				//
-				// http://stackoverflow.com/questions/2419219/how-do-i-geocode-20-addresses-without-receiving-an-over-query-limit-response
-				// http://gis.stackexchange.com/questions/15052/how-to-avoid-google-map-geocode-limit
-				// https://developers.google.com/maps/documentation/geocoding/geocoding-strategies
-				// https://developers.google.com/maps/documentation/javascript/firebase
-				// http://stackoverflow.com/questions/19640055/multiple-markers-google-map-api-v3-from-array-of-addresses-and-avoid-over-query
-				// http://econym.org.uk/gmap/geomulti.htm
-
-				geocodeAddress(geocoder, address, map);
-
-			} else {
-				console.log("loadData: skipping undefined address: ", rawAddress);
-			}
-	 	}
-	 });
-}
-
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+function placeMarker(map, positionLatLng, title) {
+    var marker = new google.maps.Marker({
+		map: map,
+		position: positionLatLng,
+		title: title
+	});
 }
 
 // Function: dumpJsonData
