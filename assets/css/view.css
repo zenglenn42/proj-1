@@ -35,7 +35,7 @@ body {
 }
 /*Dropdown Button */
 .dropbtn {
-	background-color: #b295ba;
+	background-color: #322046;
     color: white;
     padding: 16px;
     font-size: 16px;
@@ -91,6 +91,11 @@ body {
 #button3 {
     width: 350px;
 }
+
+#button4 {
+	width: 350px;
+
+}
 /*Media queries*/
 @media screen and (max-width: 768px) {
     .dropdown {
@@ -108,6 +113,10 @@ body {
     #button3 {
         width: 450px;
     }
+
+		#button4 {
+			width: 450px;
+		}
 }
 /*tablet landscape viewport*/
 @media screen and (min-width: 768px)
@@ -125,10 +134,10 @@ body {
 
 }
 /*Phone landscape viewport*/
-@media screen 
-  and (device-width: 320px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 2) 
+@media screen
+  and (device-width: 320px)
+  and (device-height: 640px)
+  and (-webkit-device-pixel-ratio: 2)
   and (orientation: landscape) {
 
     h1 {
@@ -143,7 +152,7 @@ body {
     .map {
         width: 450px;
     }
-    
+
     .dropdown {
         margin-left: 10px;
     }
@@ -178,6 +187,10 @@ body {
     #button3 {
         width: 400px;
     }
+
+		#button4 {
+			width: 400px;
+		}
 }
 
 @media screen and (max-width: 320px) {
@@ -212,4 +225,8 @@ body {
     #button3 {
         width: 300px;
     }
+
+		#button4 {
+			width: 300px;
+		}
 }

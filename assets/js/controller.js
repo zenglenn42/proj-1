@@ -23,7 +23,7 @@ function initMVC() {
 	model.init();
 
 	// Run model unit tests for sanity.  We'll comment this out in production.
-	(model.unitTests()) ? console.log("model.unitTests() passed") : 
+	(model.unitTests()) ? console.log("model.unitTests() passed") :
 	                      console.log("model.unitTests() failed");
 
 	vInit(model);
@@ -99,7 +99,7 @@ function loadData(map, model, place, dataSource) {
 					}
 				*/
 
-				// Add some interesting hover data as a 'title' for each marker that 
+				// Add some interesting hover data as a 'title' for each marker that
 				// says a little about the circumstances of the fataility.
 
 				var date = entry.date.replace(/T00:00:00.000/, '');
@@ -116,7 +116,7 @@ function loadData(map, model, place, dataSource) {
 	} else {
 		// Retrieve raw JSON data from the endpoint and
 		// display it on the screen for debug purposes.
-		
+
 		geocoder = new google.maps.Geocoder();
 
 		$.getJSON(dataSourceUrl, function(response) {
@@ -186,7 +186,7 @@ function showJsonObj(jsonObj, textstatus) {
 	var div = $("<div>");
 	$(div).attr("id", "raw-data");
 	$(div).css({
-		"color": "white", 
+		"color": "white",
 		"background-color": "gray",
 		"overflow": "scroll",
 		"width": "100%",
@@ -252,7 +252,7 @@ function loadMap(model, place) {
 	var map = new google.maps.Map(mapDomNode, mapOptions);
 
 	// Pass the map back to the caller.  It'll get used
-	// by other parts of the app as a backdrop 
+	// by other parts of the app as a backdrop
 	// (e.g., for location-specific marker data).
 
 	return map;
@@ -364,3 +364,12 @@ function vMakeMapDiv(place) {
 function vUpdateTitle(nameStr) {
 	$("title").html(nameStr);
 }
+
+// Function: locationReload
+// Usage: location.reload(true)
+// ------------------------------
+// Allows refresh functionality on click of the refresh button(#button4)
+
+$(document).on("click", "#button4", function(){
+    location.reload(true);
+});
