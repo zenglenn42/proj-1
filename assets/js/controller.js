@@ -364,3 +364,23 @@ function vMakeMapDiv(place) {
 function vUpdateTitle(nameStr) {
 	$("title").html(nameStr);
 }
+
+//Function: mapStatus
+//Usage: mapStatus();
+//-------------------
+//Provide status information regarding the data points on the map.
+function mapStatus() {
+//Define text area.
+
+	var textArea = $("<div>");
+	$("div").attr("id", "map-status");
+
+	//Make text area read-only. Add it to the div.
+
+	document.getElementById("map-status").readOnly = true;
+	$(".map-container").append(div);
+
+	//Add content to text area.
+	
+
+}
