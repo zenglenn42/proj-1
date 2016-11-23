@@ -47,14 +47,14 @@ function cInit(model) {
 
 	// This data already has lat/lng baked in and so doesn't
 	// hit the geocode bottleneck.
-	loadData(map, model, "austin", "trafficFatalities2016");
-
+	loadData(map, model, "austin", "trafficFatalities2015");
+	
 	// This dataSource requires geocode throttleling. :-/
 	// loadData(map, model, "austin", "trafficData");
 
 	// Update the map caption with the source of the data
 	// currently on display.
-	vMapStatus(model, "austin", "trafficFatalities2016");
+	vMapStatus(model, "austin", "trafficFatalities2015");
 }
 
 // Function: loadData
@@ -70,11 +70,11 @@ function loadData(map, model, place, dataSource) {
 		return false;
 	}
 
+	var position;
 	if (dataSource == "trafficFatalities2016") {
-		var position;
 		$.getJSON(dataSourceUrl, function(response) {
 			$.each(response, function(i, entry) {
-				position = new google.maps.LatLng(entry.y_coord, entry.x_coord);
+				position = new google.maps.LatLng(entry.x_coord, entry.y_coord);
 				/*
 					{
 						"area": "HE",
@@ -118,7 +118,26 @@ function loadData(map, model, place, dataSource) {
 
 			});
 		});
-	} else {
+	}  else if (dataSource == "trafficFatalities2015") {
+		$.getJSON(dataSourceUrl, function(response) {
+			$.each(response, function(i, entry) {
+			    position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
+			    
+			    var date = entry.date.replace(/T00:00:00.000/, '');
+			    if (entry.charge.toLowerCase() == "n/a") {
+				title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+			    } else {
+				title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+			    }
+			    console.log(title);
+			    placeMarker(map, position, title);
+			});
+		})
+ 	} else {
+		console.log("loadData: geocoder path needs rework due to bursty throttle by Google geocode api.");
+
+		/*
+
 		// Retrieve raw JSON data from the endpoint and
 		// display it on the screen for debug purposes.
 
@@ -147,25 +166,25 @@ function loadData(map, model, place, dataSource) {
 				}
 		 	}
 		});
+		*/
 	}
 }
 
 function geocodeAddress(geocoder, address, resultsMap) {
 	if (address) {
 		console.log("geocodeAddress:", address);
-	    geocoder.geocode({'address': address}, function(results, status) {
-	      if (status === 'OK') {
-	        //resultsMap.setCenter(results[0].geometry.location);
-	        var marker = new google.maps.Marker({
-	          map: resultsMap,
-	          position: results[0].geometry.location
-	        });
-	      } else {
-	      	console.log("Geocode was not successful for the following reason: " + status);
-	      	console.log("Failed on this address: ", address);
-	        //alert('Geocode was not successful for the following reason: ' + status);
-	      }
-	    });
+		geocoder.geocode({'address': address}, function(results, status) {
+			if (status === 'OK') {
+				var marker = new google.maps.Marker({
+				map: resultsMap,
+				position: results[0].geometry.location
+				});
+			} else {
+				console.log("Geocode was not successful for the following reason: " + status);
+				console.log("Failed on this address: ", address);
+				//alert('Geocode was not successful for the following reason: ' + status);
+			}
+		});
 	} else {
 		console.log("geocodeAddress: ignoring non-truthy address: ", address);
 		console.log("otherwise we'll trigger google geocodes api limiter");
@@ -173,7 +192,7 @@ function geocodeAddress(geocoder, address, resultsMap) {
 }
 
 function placeMarker(map, positionLatLng, title) {
-    var marker = new google.maps.Marker({
+	var marker = new google.maps.Marker({
 		map: map,
 		position: positionLatLng,
 		title: title
