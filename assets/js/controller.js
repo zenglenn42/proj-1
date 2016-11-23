@@ -9,7 +9,6 @@
 //---------------------------------------------------------------------------
 
 $(document).ready(initMVC);
-$('.selectpicker').selectpicker();
 
 // Function: initMVC
 // Usage: $(document).ready(initMVC);
@@ -20,14 +19,17 @@ $('.selectpicker').selectpicker();
 function initMVC() {
 	console.log("initMVC");
 
-	// Initialize the model, view, and controller.
-	model.init();
+	// Initialize model.
+	model.init("austin");
 
 	// Run model unit tests for sanity.  We'll comment this out in production.
 	(model.unitTests()) ? console.log("model.unitTests() passed") :
 	                      console.log("model.unitTests() failed");
 
+	// Initialize view.
 	vInit(model);
+
+	// Initialize controller.
 	cInit(model);
 }
 
@@ -43,27 +45,28 @@ function initMVC() {
 
 function cInit(model) {
 	console.log("cInit");
-	var map = loadMap(model, "austin");
+	var map = loadMap(model);
 
 	// This data already has lat/lng baked in and so doesn't
 	// hit the geocode bottleneck.
-	loadData(map, model, "austin", "trafficFatalities2015");
+	loadData(map, model, "trafficFatalities2015");
 	
 	// This dataSource requires geocode throttleling. :-/
-	// loadData(map, model, "austin", "trafficData");
+	// loadData(map, model, "trafficData");
 
 	// Update the map caption with the source of the data
 	// currently on display.
-	vMapStatus(model, "austin", "trafficFatalities2015");
+	vMapStatus(model, "trafficFatalities2015");
 }
 
 // Function: loadData
-// Usage: loadData(model, "austin", "trafficData");
+// Usage: loadData(map, model, "trafficData");
 // ------------------------------------------------
 // Loads data from the data source into the model.
 
-function loadData(map, model, place, dataSource) {
+function loadData(map, model, dataSource) {
 	console.log("loadData");
+	var place = model.getPlace();
 	var dataSourceUrl = model.getEndpointUrl(place, dataSource);
 	if (!dataSourceUrl) {
 		console.log("loadData: endpoint url is null for place: " + place + " and dataSource: " + dataSource);
@@ -222,15 +225,17 @@ function showJsonObj(jsonObj, textstatus) {
 }
 
 // Function: loadPlace
-// Usage: var map = loadPlace(model, "austin");
+// Usage: var map = loadPlace(model);
 // ---------------------------------------------
-// Fetch and render a google background map for a given place.
+// Fetch and render a google background map for the current place
+// of interest known to the model.
 //
 // The map object is returned for subsequent map api calls
 // for rendering markers, etc.
 
-function loadMap(model, place) {
+function loadMap(model) {
 	console.log("loadMap");
+	var place = model.getPlace();
 
 	// Sanity check the place before we go any farther.
 
@@ -362,7 +367,9 @@ function cDemoSocrataExample() {
 
 function vInit(model) {
 	console.log("vInit");
-	vUpdateTitle(model.appName);
+	vUpdateTitle(model.getAppName());
+	vUpdateBackgroundImage(model.getBackgroundUrl(), model.getBackgroundImagePosition());
+	$("#jumbotron-place").html(model.getAppName());
 }
 
 // Function: vMakeMapDiv
@@ -380,9 +387,19 @@ function vMakeMapDiv(place) {
 	return div;
 }
 
+// Function: vUpdateBackgroundImage
+// Usage: vUpdateBackgroundImage(model.getBackgroundUrl(), model.getBackgroundImagePosition());
+// --------------------------------------------------------------------------------------------
+// Updats the background image from the specified url.
+
+function vUpdateBackgroundImage(backgroundUrl, position) {
+	$(".jumbotron").css("background-image", "url(" + backgroundUrl + ")");
+	$(".jumbotron").css("background-position", position);
+}
+
 // Function: vUpdateTile
-// Usage: vUpdateTitle(model.appName);
-// -----------------------------------
+// Usage: vUpdateTitle(model.getAppName());
+// ----------------------------------------
 // Updates the view title from the model.
 
 function vUpdateTitle(nameStr) {
@@ -394,7 +411,7 @@ function vUpdateTitle(nameStr) {
 //-------------------
 //Provide status information regarding the data points on the map.
 
-function vMapStatus(model, place, dataSource) {
+function vMapStatus(model, dataSource) {
 
 	//Define text area.
 	var textArea = $("<div>");
@@ -406,6 +423,7 @@ function vMapStatus(model, place, dataSource) {
 	$(".map-container").append(textArea);
 
 	//Add content to text area.
+	var place = model.getPlace();
 	var url = model.getEndpointUrl(place, dataSource);
 	$(textArea).html("Source: " + url);
 }

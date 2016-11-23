@@ -36,6 +36,9 @@ body {
 .jumbotron {
     text-align: center;
     background-image: url("http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top center;
     opacity: 0.7;
 }
 

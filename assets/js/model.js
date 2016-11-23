@@ -8,7 +8,6 @@
 
 var model = {
 	// model attributes
-	appName: "Austin Aware",
 	mapAPI: {
 		geocode: {
 			description: "Google Geocoding API", // Turns street address -> lat/lng.
@@ -19,14 +18,17 @@ var model = {
 	},
 	places: {
 		austin: {
-			location: { // This is centered on the Capitol of Texas
+			appName: "Austin Aware",
+			backgroundUrl: "http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg",
+			backgroundImagePosition: "top center",
+			location: {
           		lat: 30.27504,
           		lng: -97.73855469999999,
 				city: "austin",
 				state: "texas",
 				stateAbbrev: "tx"
-        	},
-        	mapOptions: {
+			},
+			mapOptions: {
 				zoom: 11 // Good for city-level visualization.
 				         // Typically a number between 0 and 18
 				         // https://developers.google.com/maps/documentation/javascript/maxzoom
@@ -69,14 +71,18 @@ var model = {
 			}
 		},
         connecticut: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
+			appName: "Connecticut Aware",
+			backgroundUrl: "http://img.ev.mu/images/attractions/6917/960x384/780276.jpg",
+			//backgroundUrl: "http://media.istockphoto.com/photos/hartford-connecticut-skyline-picture-id478718780?k=6&m=478718780&s=170667a&w=0&h=Xbc1o9FiTBHr_IzEc0pfez94qgX3mC54RH5-x0g7SbI=",
+			backgroundImagePosition: "center",
 			location: {
 				lat: 41.7656874, 
 				lng: -72.680087,
 				city: "",
 				state: "connecticut",
 				stateAbbrev: "ct"
-       		},
-        	mapOptions: {
+			},
+			mapOptions: {
 				zoom: 8		// Good state-level visualization.
 			},
 			dataSources: {
@@ -87,26 +93,18 @@ var model = {
 					apiKey: ""
 				}
 			}
-        }
+		}
 	},
 	dynamic: {
-		knownPlaces: [],
-		places: {
-			location: {
-				austin: {
-					crimeData: [],
-					trafficData: []
-				},
-				connecticut: {
-					schoolDistricts: []
-				}
-			}	
-		}
+		place: "",
+		knownPlaces: []
 	},
 
 	// model methods
 	filterAddress: filterAddress,
 	getAppName: getAppName,
+	getBackgroundUrl: getBackgroundUrl,
+	getBackgroundImagePosition: getBackgroundImagePosition,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
 	getEndpointUrlFromSelector: getEndpointUrlFromSelector,
@@ -116,6 +114,7 @@ var model = {
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
+	getPlace: getPlace,
 	getPlaceCoord: getPlaceCoord,
 	getCity: getCity,
 	getState: getState,
@@ -123,6 +122,7 @@ var model = {
 	init: init,
 	isKnownPlace: isKnownPlace,
 	setKnownPlaces: setKnownPlaces,
+	setPlace: setPlace,
 	unitTests: unitTests
 };
 
@@ -154,11 +154,70 @@ function filterAddress(rawAddress) {
 
 // Function: getAppName
 // Usage: var name = getAppName();
-// ---------------------------------------------------------------------
+// -------------------------------
 // Returns the appName attribute associated with the model.
+//
+// If this isn't returning something meaningful, then it's likely
+// model.init(place) or model.setPlace(place) were never called
+// successfully.
 
 function getAppName() {
-	return this.appName;
+	console.log("model.getAppName");
+
+	var result;
+	var place = this.getPlace();
+	if (place) {
+		result = this.places[place].appName;
+	} else {
+		console.log("model.getAppName: Error: Unknown app name because unknown place.");
+	}
+	return result;
+}
+
+// Function: getBackgroundUrl
+// Usage: var url = model.getBackgroundUrl();
+// ------------------------------------------
+// Returns the background image url associated with the current
+// place of interest known to the model.
+//
+// Requires that model.init(place) or model.setPlace(place) has been
+// called previously.
+
+function getBackgroundUrl() {
+	console.log("model.getBackgroundUrl");
+
+	var place = this.getPlace();
+	var result;
+	if (place) {
+		result = this.places[place].backgroundUrl;
+	} else {
+		console.log("model.getBackgroundUrl: Error.  Unknown place.");
+		console.log("Can't return the background image url for a place I don't know about.");
+	}
+	return result;
+}
+
+// Function: getBackgroundImagePosition
+// Usage: var positionVal = model.getBackgroundImagePosition();
+// ------------------------------------------------------------
+// Returns the background image positioning hint for the current
+// place of interest known to the model.
+//
+// Requires that model.init(place) or model.setPlace(place) has been
+// called previously.
+
+function getBackgroundImagePosition() {
+	console.log("model.getBackgroundImagePosition");
+
+	var place = this.getPlace();
+	var result;
+	if (place) {
+		result = this.places[place].backgroundImagePosition;
+	} else {
+		console.log("model.getBackgroundImagePosition: Error.  Unknown place.");
+		console.log("Can't return the background image position for a place I don't know about.");
+	}
+	return result;
 }
 
 // Function: getCity
@@ -349,7 +408,7 @@ function getKnownPlaces() {
 	console.log("model.getKnownPlaces");
 	if (!this.dynamic.knownPlaces) {
 		console.log("model.getKnownPlaces: Don't know about any places :-/");
-		console.log("Guessing model.init() didn't get called.");
+		console.log("Guessing model.init(place) didn't get called.");
 	}
 	return this.dynamic.knownPlaces;
 }
@@ -406,6 +465,25 @@ function getMapZoom(place) {
 	var result = this.places[place].mapOptions.zoom;
 	if (!result) {
 		console.log("model.getMapZoom: Unknown place:", place);
+	}
+	return result;
+}
+
+// Function: getPlace
+// Usage: var placeKey = getPlace();
+// ---------------------------------
+// Returns the key for the current place of interested known to the model.
+//
+// This is typically configured at the beginning of the app with a call to
+// model.init(place) or during the application with model.setPlace(place).
+
+function getPlace() {
+	console.log("model.getPlace");
+
+	var result = this.dynamic.place;
+	if (!result) {
+		console.log("model.getPlace: Warning: Returning null/undefined place.");
+		console.log("Do you need to run model.init(place) or model.setPlace(place)?");
 	}
 	return result;
 }
@@ -477,15 +555,19 @@ function getStateAbbrev(place) {
 }
 
 // Function: init
-// Usage: model.init();
-// --------------------
-// Initializes the model to a known state.  Guessing that once I know
-// more about javascript object patterns, this would just get morphed
-// into the constructor.
+// Usage: model.init(place);
+// -------------------------
+// Initializes the model to a known application state.  
+// This includes specifying the default place of interest.
+// Returns true if default place is set successfully, false otherwise.
+//
+// NB: Guessing that once I know more about javascript object 
+//     patterns, this would just get morphed into the constructor.
 
-function init() {
+function init(place) {
 	console.log("model.init");
 	this.setKnownPlaces();
+	return this.setPlace(place);
 }
 
 // Function: isKnownPlace
@@ -519,6 +601,28 @@ function setKnownPlaces() {
 	}
 	result.sort();
 	this.dynamic.knownPlaces = result;
+	return result;
+}
+
+// Function: setPlace
+// Usage: model.setPlace("austin");
+// ---------------------------------------------------------------------
+// Attempts to update the model with the current place of interest.
+// Returns true if successful, false otherwise.
+//
+// This will dictate which data sources and application options are valid.
+
+function setPlace(requestedPlaceStr) {
+	console.log("model.setPlace");
+	var result = false;
+
+	var nrmlPlaceStr = requestedPlaceStr.toLowerCase();
+	if (this.isKnownPlace(nrmlPlaceStr)) {
+		this.dynamic.place = nrmlPlaceStr;
+		result = true;
+	} else {
+		console.log("model.setPlace: Invalid place: ", requestedPlaceStr);
+	}
 	return result;
 }
 
@@ -597,6 +701,34 @@ function unitTests() {
 		this.filterAddress("123 EBBandFlow Drive") !== "123 EBBandFlow Drive") {
 		result = false;
 		console.log("model.unitTests: failed filterAddress");
+	}
+
+	// Ninth unit test.
+	if (this.setPlace("Austin")) {
+		if (this.getPlace() !== "austin") {
+			result = false;
+			console.log("model.unitTests: failed setPlace/getPlace with known place.");
+		}
+	}
+	if (this.setPlace("bogusPlace")) {
+		if (this.getPlace() !== undefined || this.getPlace() !== "") {
+			result = false;
+			console.log("model.unitTests: failed setPlace/getPlace with bogus place.");
+		}
+	}
+
+	// Tenth unit test.
+	this.setPlace("austin");
+	if (this.getBackgroundUrl() != "http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg") {
+		result = false;
+		console.log("model.unitTests: failed getBackgroundUrl");
+	}
+
+	// Eleventh unit test.
+	this.setPlace("austin");
+	if (this.getBackgroundImagePosition() !== "top center") {
+		result = false;
+		console.log("model.unitTests: failed getBackgroundImagePosition");
 	}
 
 	return result;
