@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------
 
 $(document).ready(initMVC);
+$('.selectpicker').selectpicker();
 
 // Function: initMVC
 // Usage: $(document).ready(initMVC);
@@ -23,7 +24,7 @@ function initMVC() {
 	model.init();
 
 	// Run model unit tests for sanity.  We'll comment this out in production.
-	(model.unitTests()) ? console.log("model.unitTests() passed") : 
+	(model.unitTests()) ? console.log("model.unitTests() passed") :
 	                      console.log("model.unitTests() failed");
 
 	vInit(model);
@@ -50,6 +51,10 @@ function cInit(model) {
 	
 	// This dataSource requires geocode throttleling. :-/
 	// loadData(map, model, "austin", "trafficData");
+
+	// Update the map caption with the source of the data
+	// currently on display.
+	vMapStatus(model, "austin", "trafficFatalities2015");
 }
 
 // Function: loadData
@@ -99,7 +104,7 @@ function loadData(map, model, place, dataSource) {
 					}
 				*/
 
-				// Add some interesting hover data as a 'title' for each marker that 
+				// Add some interesting hover data as a 'title' for each marker that
 				// says a little about the circumstances of the fataility.
 
 				var date = entry.date.replace(/T00:00:00.000/, '');
@@ -205,7 +210,7 @@ function showJsonObj(jsonObj, textstatus) {
 	var div = $("<div>");
 	$(div).attr("id", "raw-data");
 	$(div).css({
-		"color": "white", 
+		"color": "white",
 		"background-color": "gray",
 		"overflow": "scroll",
 		"width": "100%",
@@ -271,7 +276,7 @@ function loadMap(model, place) {
 	var map = new google.maps.Map(mapDomNode, mapOptions);
 
 	// Pass the map back to the caller.  It'll get used
-	// by other parts of the app as a backdrop 
+	// by other parts of the app as a backdrop
 	// (e.g., for location-specific marker data).
 
 	return map;
@@ -383,3 +388,33 @@ function vMakeMapDiv(place) {
 function vUpdateTitle(nameStr) {
 	$("title").html(nameStr);
 }
+
+//Function: vMapStatus
+//Usage: vMapStatus();
+//-------------------
+//Provide status information regarding the data points on the map.
+
+function vMapStatus(model, place, dataSource) {
+
+	//Define text area.
+	var textArea = $("<div>");
+	$(textArea).attr("id", "map-status");
+
+	//Make text area read-only. Add it to the div.
+	$(textArea).attr('readonly','readonly');
+
+	$(".map-container").append(textArea);
+
+	//Add content to text area.
+	var url = model.getEndpointUrl(place, dataSource);
+	$(textArea).html("Source: " + url);
+}
+
+// Function: locationReload
+// Usage: location.reload(true)
+// ------------------------------
+// Resets zoom level of map when 'reset zoom' button clicked.
+
+$(document).on("click", "#reset-button", function(){
+    location.reload(true);
+});
