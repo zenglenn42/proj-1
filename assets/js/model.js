@@ -29,7 +29,7 @@ var model = {
 				stateAbbrev: "tx"
 			},
 			mapOptions: {
-				zoom: 11 // Good for city-level visualization.
+				zoom: 10 // Good for city-level visualization.
 				         // Typically a number between 0 and 18
 				         // https://developers.google.com/maps/documentation/javascript/maxzoom
 			},
@@ -112,6 +112,7 @@ var model = {
 	getAppName: getAppName,
 	getBackgroundUrl: getBackgroundUrl,
 	getBackgroundImagePosition: getBackgroundImagePosition,
+	getDataSourceDescription: getDataSourceDescription,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
 	getEndpointUrlFromSelector: getEndpointUrlFromSelector,
@@ -249,6 +250,21 @@ function getCity(place) {
 		if (!result) {
 			console.log("model.getCity: WARNING: No city value currently defined for place: ", place);
 		}
+	}
+	return result;
+}
+
+// Function: getDataSourceDescription
+// Usage: var str = getDataSourceDescription("trafficFatalities2016");
+// -------------------------------------------------------------------
+// Returns a nice human-relatable description of the data source.
+
+function getDataSourceDescription(dataSource) {
+	console.log("getDataSourceDescription");
+	var result = this.places[this.getPlace()].dataSources[dataSource].description;	
+	if (!result) {
+		result = "No description for data source  " + dataSource;
+		console.log("model.getDataSourceDescription: Error missing description for dataSource: ", dataSource);
 	}
 	return result;
 }

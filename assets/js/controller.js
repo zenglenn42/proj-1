@@ -19,8 +19,11 @@ $(document).ready(initMVC);
 function initMVC() {
 	console.log("initMVC");
 
+	var place = "austin";
+	var dataSource = "trafficFatalities2016";
+
 	// Initialize model.
-	model.init("austin");
+	model.init(place);
 
 	// Run model unit tests for sanity.  We'll comment this out in production.
 	(model.unitTests()) ? console.log("model.unitTests() passed") :
@@ -30,7 +33,7 @@ function initMVC() {
 	vInit(model);
 
 	// Initialize controller.
-	cInit(model);
+	cInit(model, dataSource);
 }
 
 //---------------------------------------------------------------------------
@@ -43,20 +46,11 @@ function initMVC() {
 // Initializes the controller by registering various callback functions
 // that come to life in response to user input of some kind.
 
-function cInit(model) {
+function cInit(model, dataSource) {
 	console.log("cInit");
+
 	var map = loadMap(model);
-
-	// This data already has lat/lng baked in and so doesn't
-	// hit the geocode bottleneck.
-	loadData(map, model, "trafficFatalities2015");
-	
-	// This dataSource requires geocode throttleling. :-/
-	// loadData(map, model, "trafficData");
-
-	// Update the map caption with the source of the data
-	// currently on display.
-	vMapStatus(model, "trafficFatalities2015");
+	loadData(map, model, dataSource);
 }
 
 // Function: loadData
@@ -72,6 +66,9 @@ function loadData(map, model, dataSource) {
 		console.log("loadData: endpoint url is null for place: " + place + " and dataSource: " + dataSource);
 		return false;
 	}
+
+	// Update the map caption with description of the data therein.
+	vMapCaption(model.getDataSourceDescription(dataSource));
 
 	var position;
 	switch (dataSource) {
@@ -410,12 +407,25 @@ function vUpdateTitle(nameStr) {
 	$("title").html(nameStr);
 }
 
-//Function: vMapStatus
-//Usage: vMapStatus();
-//-------------------
-//Provide status information regarding the data points on the map.
+// Function: vMapSource
+// Usage: vMapSources();
+// ---------------------
+// Provide provenance for data on display through the map's caption line.
 
-function vMapStatus(model, dataSource) {
+function vMapSource(model, dataSource) {
+
+	//Add content to text area.
+	var place = model.getPlace();
+	var url = model.getEndpointUrl(place, dataSource).replace(/$$app_toke*$/,'').replace(/&api_key*$/,'');
+	vMapCaption(url);
+}
+
+// Function: vMapCaption
+// Usage: vMapCaption("2015 Traffic Fatalities");
+// ----------------------------------------------
+// Populates the caption area below the map with a string.
+
+function vMapCaption(str) {
 
 	//Define text area.
 	var textArea = $("<div>");
@@ -427,9 +437,7 @@ function vMapStatus(model, dataSource) {
 	$(".map-container").append(textArea);
 
 	//Add content to text area.
-	var place = model.getPlace();
-	var url = model.getEndpointUrl(place, dataSource);
-	$(textArea).html("Source: " + url);
+	$(textArea).html(str);
 }
 
 // Function: locationReload
