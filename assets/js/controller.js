@@ -124,18 +124,30 @@ function loadData(map, model, dataSource) {
 	}  else if (dataSource == "trafficFatalities2015") {
 		$.getJSON(dataSourceUrl, function(response) {
 			$.each(response, function(i, entry) {
-			    position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
-			    
-			    var date = entry.date.replace(/T00:00:00.000/, '');
-			    if (entry.charge.toLowerCase() == "n/a") {
-				title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
-			    } else {
-				title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
-			    }
-			    console.log(title);
-			    placeMarker(map, position, title);
+				if (entry.location_1) {
+				    position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
+					var date = entry.date.replace(/T00:00:00.000/, '');
+					if (entry.charge.toLowerCase() == "n/a") {
+						title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+					} else {
+						title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+					}
+					console.log(title);
+					placeMarker(map, position, title);
+				} else {
+
+					// This usually amounts to meta data about the other records
+					// i.e., an object that aggregates the total number of fatalities for the year.
+					//
+					//       a retraction object for cases where instead of an accident,
+					//       the fatality was ruled a suicide; indicating why an earlier
+					//       entry might have been removed from the db.
+
+					console.log("loadData: entry.location_1 is undefined :-/");
+					console.log("loadData: therefore unable to fetch lat/lng for: ", entry);
+				}
 			});
-		})
+		});
  	} else {
 		console.log("loadData: geocoder path needs rework due to bursty throttle by Google geocode api.");
 
