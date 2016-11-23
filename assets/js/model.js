@@ -46,7 +46,7 @@ var model = {
 				},
 				trafficFatalities2015: {
 					description: "2015 Austin Traffic Fatalities",
-					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json",
+					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json?",
 					apiKeyName: "$$app_token",
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
 				},

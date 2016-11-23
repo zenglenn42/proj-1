@@ -46,7 +46,8 @@ function cInit(model) {
 
 	// This data already has lat/lng baked in and so doesn't
 	// hit the geocode bottleneck.
-	loadData(map, model, "austin", "trafficFatalities2016");
+	loadData(map, model, "austin", "trafficFatalities2015");
+	
 
 	// This dataSource requires geocode throttleling. :-/
 	// loadData(map, model, "austin", "trafficData");
@@ -69,7 +70,12 @@ function loadData(map, model, place, dataSource) {
 		var position;
 		$.getJSON(dataSourceUrl, function(response) {
 			$.each(response, function(i, entry) {
-				position = new google.maps.LatLng(entry.y_coord, entry.x_coord);
+				position = new google.maps.LatLng(entry.x_coord, entry.y_coord);
+
+
+			
+		
+	
 				/*
 					{
 						"area": "HE",
@@ -113,7 +119,29 @@ function loadData(map, model, place, dataSource) {
 
 			});
 		});
-	} else {
+
+
+
+	}  else if (dataSource == "trafficFatalities2015") {
+    var position;
+    $.getJSON(dataSourceUrl, function(response) {
+        $.each(response, function(i, entry) {
+            position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
+            
+            var date = entry.date.replace(/T00:00:00.000/, '');
+            if (entry.charge.toLowerCase() == "n/a") {
+                title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+            } else {
+                title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+            }
+            console.log(title);
+            placeMarker(map, position, title);
+        });
+    })
+ }
+
+	
+		else {
 		// Retrieve raw JSON data from the endpoint and
 		// display it on the screen for debug purposes.
 		
