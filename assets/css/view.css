@@ -6,11 +6,12 @@
 */
 
 body {
-	font-family: 'Raleway', sans-serif;
-	background: #322046;
+    font-family: 'Raleway', sans-serif;
+    background: #322046;
 }
-/*Map area*/
- #map-container {
+
+/* Map area */
+#map-container {
    height: 480px;
    width: 640px;
    float: left;
@@ -23,19 +24,24 @@ body {
     width: 640px;
 }
 
-/*Title heading*/
+#map-status {
+    color: white;
+}
+
+/* Title heading */
  h1 {
- 	font-size: 70px;
+    font-size: 70px;
  }
 
 .jumbotron {
-	text-align: center;
+    text-align: center;
     background-image: url("http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg");
     opacity: 0.7;
 }
-/*Dropdown Button */
+
+/* Dropdown Button */
 .dropbtn {
-	background-color: #b295ba;
+    background-color: #b295ba;
     color: white;
     padding: 16px;
     font-size: 16px;
@@ -43,17 +49,20 @@ body {
     cursor: pointer;
     width: 100px;
 }
+
 /* Dropdown button on hover & focus */
 .dropbtn:hover, .dropbtn:focus {
     background-color: #6f5e85;
 }
-/*Container <div> to position dropdown content */
+
+/* Container <div> to position dropdown content */
 .dropdown {
 	position: relative;
     display: inline-block;
     padding: 10px;
     margin: 10px;
 }
+
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
     display: none;
@@ -77,49 +86,43 @@ body {
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
 
-/*Buttons*/
-#button1 {
+/* Buttons */
+#traffic2015-button {
     padding: 15px;
     margin-top: 20px;
     width: 350px;
 }
 
-#button2 {
+#traffic2016-button {
     width: 350px;
 }
 
-#button3 {
+#reset-button {
     width: 350px;
-}
-
-#button4 {
-	width: 350px;
-	background-color: #b295ba;
+    background-color: #b295ba;
 
 }
-/*Media queries*/
+
+/* Media queries */
 @media screen and (max-width: 768px) {
     .dropdown {
         margin-left: 120px;
     }
 
-    #button1 {
+    #traffic2015-button {
         width: 450px;
     }
 
-    #button2 {
+    #traffic2016-button {
         width: 450px;
     }
 
-    #button3 {
+    #reset-button {
         width: 450px;
     }
-
-		#button4 {
-			width: 450px;
-		}
 }
-/*tablet landscape viewport*/
+
+/* Tablet landscape viewport */
 @media screen and (min-width: 768px)
             and (max-width: 1024px)
             and (orientation: landscape) {
@@ -134,7 +137,8 @@ body {
     }
 
 }
-/*Phone landscape viewport*/
+
+/* Phone landscape viewport */
 @media screen
   and (device-width: 320px)
   and (device-height: 640px)
@@ -177,21 +181,17 @@ body {
         margin-left: 10px;
     }
 
-    #button1 {
+    #traffic2015-button {
         width: 400px;
     }
 
-    #button2 {
+    #traffic2016-button {
         width: 400px;
     }
 
-    #button3 {
+    #reset-button {
         width: 400px;
     }
-
-		#button4 {
-			width: 400px;
-		}
 }
 
 @media screen and (max-width: 320px) {
@@ -215,19 +215,15 @@ body {
         padding: 5px;
     }
 
-    #button1 {
+    #traffic2015-button {
         width: 300px;
     }
 
-    #button2 {
+    #traffic2016-button {
         width: 300px;
     }
 
-    #button3 {
+    #reset-button {
         width: 300px;
     }
-
-		#button4 {
-			width: 300px;
-		}
 }

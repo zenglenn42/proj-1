@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------
 
 $(document).ready(initMVC);
+$('.selectpicker').selectpicker();
 
 // Function: initMVC
 // Usage: $(document).ready(initMVC);
@@ -50,6 +51,10 @@ function cInit(model) {
 
 	// This dataSource requires geocode throttleling. :-/
 	// loadData(map, model, "austin", "trafficData");
+
+	// Update the map caption with the source of the data
+	// currently on display.
+	vMapStatus(model, "austin", "trafficFatalities2016");
 }
 
 // Function: loadData
@@ -365,11 +370,32 @@ function vUpdateTitle(nameStr) {
 	$("title").html(nameStr);
 }
 
+//Function: vMapStatus
+//Usage: vMapStatus();
+//-------------------
+//Provide status information regarding the data points on the map.
+
+function vMapStatus(model, place, dataSource) {
+
+	//Define text area.
+	var textArea = $("<div>");
+	$(textArea).attr("id", "map-status");
+
+	//Make text area read-only. Add it to the div.
+	$(textArea).attr('readonly','readonly');
+
+	$(".map-container").append(textArea);
+
+	//Add content to text area.
+	var url = model.getEndpointUrl(place, dataSource);
+	$(textArea).html("Source: " + url);
+}
+
 // Function: locationReload
 // Usage: location.reload(true)
 // ------------------------------
-// Allows refresh functionality on click of the refresh button(#button4)
+// Resets zoom level of map when 'reset zoom' button clicked.
 
-$(document).on("click", "#button4", function(){
+$(document).on("click", "#reset-button", function(){
     location.reload(true);
 });
