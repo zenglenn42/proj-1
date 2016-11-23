@@ -51,8 +51,7 @@ var model = {
 					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json?",
 					apiKeyName: "$$app_token",
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
-					// Use closure to normalize the fetching of lat/lng from schemas
-					// that vary across dataSources.
+					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
 					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;}
 				},
@@ -66,8 +65,7 @@ var model = {
 					//apiKeyName: "$$app_token",
 					//apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
 
-					// Use closure to normalize the fetching of lat/lng from schemas
-					// that vary across dataSources.
+					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
 					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;}
 				},
