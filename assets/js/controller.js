@@ -100,67 +100,32 @@ function loadData(map, model, dataSource) {
 				$.getJSON(dataSourceUrl, function(response) {
 					$.each(response, function(i, entry) {
 
-						// Each entry pulled from the response json looks roughly like this:
-						//	{
-						//		"area": "HE",
-						//		"case_number": "16-0140992",
-						//		"case_status": "Closed",
-						//		"charge": "N/A",
-						//		"date": "2016-01-14T00:00:00.000",
-						//		"day": "Thu",
-						//		"dl_status_incident": "okay",
-						//		"fatal_crash": "2",
-						//		"ftsra": "n",
-						//		"hour": "14",
-						//		"impaired_type": "UNK",
-						//		"killed_driver_pass": "n/a",
-						//		"location": "4800 E. Riverside Dr.",
-						//		"month": "Jan",
-						//		"of_fatalities": "1",
-						//		"ran_red_light_or_stop_sign": "N",
-						//		"related": "MV/Ped",
-						//		"restraint_helmet": "n/a",
-						//		"speeding": "N",
-						//		"time": "14:46",
-						//		"type": "Pedestrian",
-						//		"type_of_road": "high use roadway",
-						//		.. /* lat/lng schema varies by data source */
-						//	}
+						// Fetch lat/lng positon for the marker.
 
 						var lat = model.getLat(entry, dataSource);
 						var lng = model.getLng(entry, dataSource);
 						console.log("(lat, lng)", "(" + lat + ", " + lng + ")");
 
 						if (lat && lng) {
+
 						    position = new google.maps.LatLng(lat, lng);
 
-							// Add some interesting hover data as a 'title' for each marker that
-							// says a little about the circumstances of the fataility.
+						    // Fetch some notes to display as 'hover-over' text for
+						    // the marker.
 
-							switch (dataSource) {
-								case "trafficFatalities2015":
-								case "trafficFatalities2016":
-									var date = entry.date.replace(/T00:00:00.000/, '');
-									if (entry.charge.toLowerCase() == "n/a") {
-										title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
-									} else {
-										title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
-									}
-									break;
-								case "schoolDistricts":
-									title = entry.name;
-									break;
-							}
+							var title = model.getMarkerTitle(entry, dataSource);
 							console.log(title);
+
+							// Position a single marker on the map.
+
 							placeMarker(map, model, dataSource, position, title);
+
 						} else {
 
-							// This usually amounts to meta data about the other records
-							// i.e., an object that aggregates the total number of fatalities for the year.
-							//
-							//       a retraction object for cases where instead of an accident,
-							//       the fatality was ruled a suicide; indicating why an earlier
-							//       entry might have been removed from the db.
+							// Don't expect all entries in the inbound json array to be structured
+							// the same way.  Sometimes 'summary' records are added that have
+							// entire different schema than the typical record.  For now, we
+							// just ignore these.
 
 							console.log("loadData: Unable to extract lat and lng from:", entry);
 						}

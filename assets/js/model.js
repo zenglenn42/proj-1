@@ -42,6 +42,9 @@ var model = {
 					apiKey: "",
 					getLat: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLat: FIX ME")},
 					getLng: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLng: FIX ME")},
+					getMarkerTitle: function(entry) {
+						return "model.places.austin.dataSources.crimeData: FIXME";
+					},
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/black-dot.png"
 				},
 				trafficData: {
@@ -51,6 +54,9 @@ var model = {
 					apiKey: "",
 					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLat: FIX ME")},
 					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLng: FIX ME")},
+					getMarkerTitle: function(entry) {
+						return "model.places.austin.dataSources.trafficData.getMarkerTitle: FIXME";
+					},
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2015: {
@@ -61,6 +67,7 @@ var model = {
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
 					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;},
+					getMarkerTitle: getMarkerTitleFatalAustin,
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2016: {
@@ -76,6 +83,7 @@ var model = {
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
 					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
+					getMarkerTitle: getMarkerTitleFatalAustin,
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
 				},
 				trafficSignalsOnFlash: {
@@ -86,6 +94,9 @@ var model = {
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLat: FIX ME")},
 					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLng: FIX ME")},
+					getMarkerTitle: function(entry) {
+						return "model.places.austin.dataSources.trafficSignalsOnFlash: FIXME";
+					},
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
 				}
 			}
@@ -113,6 +124,10 @@ var model = {
 					apiKey: "",
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.latitude : undefined;},
 					getLng: function(entry) {return (entry.location_1) ? entry.location_1.longitude : undefined;},
+					getMarkerTitle: function(entry) {
+						title = entry.name; // This corresponds to the School District name.
+						return title;
+					},
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
 				}
 			}
@@ -139,6 +154,8 @@ var model = {
 	getLng: getLng,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
+	getMarkerTitle: getMarkerTitle,
+	getMarkerTitleFatalAustin: getMarkerTitleFatalAustin,
 	getMapZoom: getMapZoom,
 	getMarkerUrl: getMarkerUrl,
 	getPlace: getPlace,
@@ -462,6 +479,7 @@ function getKnownPlaces() {
 // to data source schema.
 
 function getLat(entry, dataSource) {
+	console.log("model.getLat");
 	var place = this.getPlace();
 	return this.places[place].dataSources[dataSource].getLat(entry);
 }
@@ -473,6 +491,7 @@ function getLat(entry, dataSource) {
 // to data source schema.
 
 function getLng(entry, dataSource) {
+	console.log("model.getLng");
 	var place = this.getPlace();
 	return this.places[place].dataSources[dataSource].getLng(entry);
 }
@@ -517,6 +536,56 @@ function getMapHtmlId(place, dataSource) {
 	return result;
 }
 
+// Function: getMarkerTitle
+// Usage: var latitude = getMarkerTitle(jsonEntry, "trafficFatalities2016");
+// -------------------------------------------------------------------------
+// For a given object, return the hover-over 'title' text to associate with
+// the Google map marker.
+//
+// For example, if someone is viewing the Austin Traffic Fatalities data
+// and they hover over a marker on the map, some salient details about
+// that fatality will momentarily appear.
+//
+// This routine returns the text that one would see when hovering over a 
+// marker.  
+//
+// TODO:
+// Huh, i'm just realizing this is not really a mobile friendly
+// play since the notion of hover doesn't not apply there.
+
+function getMarkerTitle(entry, dataSource) {
+	console.log("model.getMarkerTitle");
+	var place = this.getPlace();
+	return this.places[place].dataSources[dataSource].getMarkerTitle(entry);
+}
+
+// Function: getMarkerTitleFatalAustin
+// Usage: var markerText = getMarkerTitleFatalAustin(jsonEntry);
+// -------------------------------------------------------------
+// Returns hover-over 'title' text to associate with the Google map marker
+// for Austin Traffic Fatality endpoints.
+//
+// Typical marker text might look like:
+//
+// "6800 Blk Southwest Pkwy, MV/MC, Motorcycle, Pending, 2016-09-19, Mon, 17:45"
+//
+// ... meaning a fatal accident involving a car and motorcycle happened on
+//     September 19th at 5:45pm.  Charges are pending.
+//
+// Sometimes the 'charges' field is empty and is therefore removed from the
+// hover text.
+
+function getMarkerTitleFatalAustin(entry) {
+	console.log("model.getMarkerTitleFataAustin");
+	var date = entry.date.replace(/T00:00:00.000/, '');
+	if (entry.charge.toLowerCase() == "n/a") {
+		title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+	} else {
+		title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+	}
+	return title;
+}
+
 // Function: getMapZoom
 // Usage: var mapZoom = getMapZoom(place);
 // ---------------------------------------------------------------------
@@ -532,6 +601,7 @@ function getMapZoom(place) {
 	}
 	return result;
 }
+
 
 // Function: getMarkerUrl
 // Usage: var markerUrl = getMarkerUrl("trafficFatalities2016");
