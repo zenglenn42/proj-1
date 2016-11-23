@@ -50,17 +50,26 @@ var model = {
 					description: "2015 Austin Traffic Fatalities",
 					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json?",
 					apiKeyName: "$$app_token",
-					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
+					// Use closure to normalize the fetching of lat/lng from schemas
+					// that vary across dataSources.
+					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
+					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;}
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
 					queryUrl: "https://data.austintexas.gov/resource/vn6k-4eq5.json",
 					apiKeyName: "",
-					apiKey: ""
+					apiKey: "",
 					// Huh, seems to work with out app_token.  Getting 404 otherwise.
 					//
 					//apiKeyName: "$$app_token",
 					//apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+
+					// Use closure to normalize the fetching of lat/lng from schemas
+					// that vary across dataSources.
+					getLat: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
+					getLng: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;}
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",
@@ -71,7 +80,7 @@ var model = {
 			}
 		},
         connecticut: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
-			appName: "Connecticut Aware",
+			appName: "Connected Connecticut",
 			backgroundUrl: "http://img.ev.mu/images/attractions/6917/960x384/780276.jpg",
 			//backgroundUrl: "http://media.istockphoto.com/photos/hartford-connecticut-skyline-picture-id478718780?k=6&m=478718780&s=170667a&w=0&h=Xbc1o9FiTBHr_IzEc0pfez94qgX3mC54RH5-x0g7SbI=",
 			backgroundImagePosition: "center",

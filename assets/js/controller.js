@@ -77,7 +77,9 @@ function loadData(map, model, dataSource) {
 	if (dataSource == "trafficFatalities2016") {
 		$.getJSON(dataSourceUrl, function(response) {
 			$.each(response, function(i, entry) {
-				position = new google.maps.LatLng(entry.x_coord, entry.y_coord);
+				var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
+				var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
+				position = new google.maps.LatLng(lat, lng);
 				/*
 					{
 						"area": "HE",
@@ -124,8 +126,13 @@ function loadData(map, model, dataSource) {
 	}  else if (dataSource == "trafficFatalities2015") {
 		$.getJSON(dataSourceUrl, function(response) {
 			$.each(response, function(i, entry) {
-				if (entry.location_1) {
-				    position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
+				var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
+				var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
+				console.log("(lat, lng)", "(" + lat + ", " + lng + ")");
+
+				if (lat && lng) {
+				    position = new google.maps.LatLng(lat, lng);
+				    //position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
 					var date = entry.date.replace(/T00:00:00.000/, '');
 					if (entry.charge.toLowerCase() == "n/a") {
 						title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
