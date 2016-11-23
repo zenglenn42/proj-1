@@ -74,121 +74,106 @@ function loadData(map, model, dataSource) {
 	}
 
 	var position;
-	if (dataSource == "trafficFatalities2016") {
-		$.getJSON(dataSourceUrl, function(response) {
-			$.each(response, function(i, entry) {
-				var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
-				var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
-				position = new google.maps.LatLng(lat, lng);
-				/*
-					{
-						"area": "HE",
-						"case_number": "16-0140992",
-						"case_status": "Closed",
-						"charge": "N/A",
-						"date": "2016-01-14T00:00:00.000",
-						"day": "Thu",
-						"dl_status_incident": "okay",
-						"fatal_crash": "2",
-						"ftsra": "n",
-						"hour": "14",
-						"impaired_type": "UNK",
-						"killed_driver_pass": "n/a",
-						"location": "4800 E. Riverside Dr.",
-						"month": "Jan",
-						"of_fatalities": "1",
-						"ran_red_light_or_stop_sign": "N",
-						"related": "MV/Ped",
-						"restraint_helmet": "n/a",
-						"speeding": "N",
-						"time": "14:46",
-						"type": "Pedestrian",
-						"type_of_road": "high use roadway",
-						"x_coord": "-97.717471000000003",
-						"y_coord": "30.231659000000001"
-					}
-				*/
+	switch (dataSource) {
+		case "trafficFatalities2015":
+		case "trafficFatalities2016": {
+				$.getJSON(dataSourceUrl, function(response) {
+					$.each(response, function(i, entry) {
 
-				// Add some interesting hover data as a 'title' for each marker that
-				// says a little about the circumstances of the fataility.
+						// Each entry pulled from the response json looks roughly like this:
+						//	{
+						//		"area": "HE",
+						//		"case_number": "16-0140992",
+						//		"case_status": "Closed",
+						//		"charge": "N/A",
+						//		"date": "2016-01-14T00:00:00.000",
+						//		"day": "Thu",
+						//		"dl_status_incident": "okay",
+						//		"fatal_crash": "2",
+						//		"ftsra": "n",
+						//		"hour": "14",
+						//		"impaired_type": "UNK",
+						//		"killed_driver_pass": "n/a",
+						//		"location": "4800 E. Riverside Dr.",
+						//		"month": "Jan",
+						//		"of_fatalities": "1",
+						//		"ran_red_light_or_stop_sign": "N",
+						//		"related": "MV/Ped",
+						//		"restraint_helmet": "n/a",
+						//		"speeding": "N",
+						//		"time": "14:46",
+						//		"type": "Pedestrian",
+						//		"type_of_road": "high use roadway",
+						//		.. /* lat/lng schema varies by data source */
+						//	}
 
-				var date = entry.date.replace(/T00:00:00.000/, '');
-				if (entry.charge.toLowerCase() == "n/a") {
-					title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
-				} else {
-					title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
-				}
-				console.log(title);
-				placeMarker(map, position, title);
+						var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
+						var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
+						console.log("(lat, lng)", "(" + lat + ", " + lng + ")");
 
-			});
-		});
-	}  else if (dataSource == "trafficFatalities2015") {
-		$.getJSON(dataSourceUrl, function(response) {
-			$.each(response, function(i, entry) {
-				var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
-				var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
-				console.log("(lat, lng)", "(" + lat + ", " + lng + ")");
+						if (lat && lng) {
+						    position = new google.maps.LatLng(lat, lng);
 
-				if (lat && lng) {
-				    position = new google.maps.LatLng(lat, lng);
-				    //position = new google.maps.LatLng(entry.location_1.coordinates[0], entry.location_1.coordinates[1]);
-					var date = entry.date.replace(/T00:00:00.000/, '');
-					if (entry.charge.toLowerCase() == "n/a") {
-						title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
-					} else {
-						title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
-					}
-					console.log(title);
-					placeMarker(map, position, title);
-				} else {
+							// Add some interesting hover data as a 'title' for each marker that
+							// says a little about the circumstances of the fataility.
 
-					// This usually amounts to meta data about the other records
-					// i.e., an object that aggregates the total number of fatalities for the year.
-					//
-					//       a retraction object for cases where instead of an accident,
-					//       the fatality was ruled a suicide; indicating why an earlier
-					//       entry might have been removed from the db.
+							var date = entry.date.replace(/T00:00:00.000/, '');
+							if (entry.charge.toLowerCase() == "n/a") {
+								title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+							} else {
+								title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+							}
+							console.log(title);
+							placeMarker(map, position, title);
+						} else {
 
-					console.log("loadData: entry.location_1 is undefined :-/");
-					console.log("loadData: therefore unable to fetch lat/lng for: ", entry);
-				}
-			});
-		});
- 	} else {
-		console.log("loadData: geocoder path needs rework due to bursty throttle by Google geocode api.");
+							// This usually amounts to meta data about the other records
+							// i.e., an object that aggregates the total number of fatalities for the year.
+							//
+							//       a retraction object for cases where instead of an accident,
+							//       the fatality was ruled a suicide; indicating why an earlier
+							//       entry might have been removed from the db.
 
-		/*
+							console.log("loadData: Unable to extract lat and lng from:", entry);
+						}
+					});
+				});
+			}
+			break;
 
-		// Retrieve raw JSON data from the endpoint and
-		// display it on the screen for debug purposes.
+		default:
+			console.log("loadData: That following data source is not currently supported:", place, dataSource);
+			console.log("loadData: Want to help add it? The code is open source.");
 
-		geocoder = new google.maps.Geocoder();
+			console.log("loadData: geocoder path needs rework due to bursty throttle by Google geocode api.");
+			console.log("loadData: Anything beyond first 10 goecode calls in rapid succession trigger an");
+			console.log("loadData: api QUERY_OVER_LIMIT error with no lat/lng returned for given street address.");
 
-		$.getJSON(dataSourceUrl, function(response) {
-		 	for (var i = 0; i < response.length; i++) {
-		 		var rawAddress = response[i].location;
-		 		var address = model.getFullAddress(place, rawAddress);
-		 		if (address) {
-		 			console.log("loadData: truthy i hope? ", address);
+			// TODO: Do we need to throttle our geocode calls to avoid an OVER_QUERY_LIMIT error?
+			//
+			// http://stackoverflow.com/questions/2419219/how-do-i-geocode-20-addresses-without-receiving-an-over-query-limit-response
+			// http://gis.stackexchange.com/questions/15052/how-to-avoid-google-map-geocode-limit
+			// https://developers.google.com/maps/documentation/geocoding/geocoding-strategies
+			// https://developers.google.com/maps/documentation/javascript/firebase
+			// http://stackoverflow.com/questions/19640055/multiple-markers-google-map-api-v3-from-array-of-addresses-and-avoid-over-query
+			// http://econym.org.uk/gmap/geomulti.htm
 
-					// TODO: Do we need to throttle our geocode calls to avoid an OVER_QUERY_LIMIT error?
-					//
-					// http://stackoverflow.com/questions/2419219/how-do-i-geocode-20-addresses-without-receiving-an-over-query-limit-response
-					// http://gis.stackexchange.com/questions/15052/how-to-avoid-google-map-geocode-limit
-					// https://developers.google.com/maps/documentation/geocoding/geocoding-strategies
-					// https://developers.google.com/maps/documentation/javascript/firebase
-					// http://stackoverflow.com/questions/19640055/multiple-markers-google-map-api-v3-from-array-of-addresses-and-avoid-over-query
-					// http://econym.org.uk/gmap/geomulti.htm
+			// Retrieve raw JSON data from the endpoint and
+			// display it on the screen for debug purposes.
 
-					geocodeAddress(geocoder, address, map);
-
-				} else {
-					console.log("loadData: skipping undefined address: ", rawAddress);
-				}
-		 	}
-		});
-		*/
+			//geocoder = new google.maps.Geocoder();
+			//$.getJSON(dataSourceUrl, function(response) {
+			// 	for (var i = 0; i < response.length; i++) {
+			// 		var rawAddress = response[i].location;
+			// 		var address = model.getFullAddress(place, rawAddress);
+			// 		if (address) {
+			// 			console.log("loadData: truthy i hope? ", address);
+			//			geocodeAddress(geocoder, address, map);
+			//		} else {
+			//			console.log("loadData: skipping undefined address: ", rawAddress);
+			//		}
+			// 	}
+			//});
 	}
 }
 

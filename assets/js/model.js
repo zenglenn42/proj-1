@@ -68,8 +68,8 @@ var model = {
 
 					// Use closure to normalize the fetching of lat/lng from schemas
 					// that vary across dataSources.
-					getLat: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
-					getLng: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;}
+					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
+					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;}
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",
