@@ -32,8 +32,12 @@ function initMVC() {
 	// Initialize view.
 	vInit(model);
 
+	// Initialize map.
+	var map = loadMap(model);
+	loadData(map, model, dataSource);
+
 	// Initialize controller.
-	cInit(model, dataSource);
+	cInit(map, model, dataSource);
 }
 
 //---------------------------------------------------------------------------
@@ -46,11 +50,29 @@ function initMVC() {
 // Initializes the controller by registering various callback functions
 // that come to life in response to user input of some kind.
 
-function cInit(model, dataSource) {
+function cInit(map, model, dataSource) {
 	console.log("cInit");
 
-	var map = loadMap(model);
-	loadData(map, model, dataSource);
+	// TODO: Optimization
+	//
+	// Could use some state to prevent reloading an already loaded
+	// map if dataSource has not changed.
+
+	$("#traffic2015-button").on("click", function() {
+		console.log("clicked 2015 button");
+		var map = loadMap(model);
+		model.setPlace("austin");
+		loadData(map, model, "trafficFatalities2015");
+		return false;
+	});
+
+	$("#traffic2016-button").on("click", function() {
+		console.log("clicked 2016 button");
+		var map = loadMap(model);
+		model.setPlace("austin");
+		loadData(map, model, "trafficFatalities2016");
+		return false;
+	});
 }
 
 // Function: loadData
@@ -387,11 +409,13 @@ function vMapSource(model, dataSource) {
 
 function vMapCaption(str) {
 
-	//Define text area.
-	var textArea = $("<div>");
+	$("#map-status").remove();
+
+	// Define text area.
+	var textArea = $("<span>");
 	$(textArea).attr("id", "map-status");
 
-	//Make text area read-only. Add it to the div.
+	// Make text area read-only. Add it to the div.
 	$(textArea).attr('readonly','readonly');
 
 	$(".map-container").append(textArea);
