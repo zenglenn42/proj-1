@@ -16,6 +16,7 @@ var model = {
 			apiKey: "AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU"
 		}
 	},
+	defaultMarkerUrl: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
 	places: {
 		austin: {
 			appName: "Austin Aware",
@@ -38,13 +39,19 @@ var model = {
 					description: "APD Incident Data",
 					queryUrl: "https://data.austintexas.gov/resource/rkrg-9tez.json",
 					apiKeyName: "",
-					apiKey: ""
+					apiKey: "",
+					getLat: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLat: FIX ME")},
+					getLng: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLng: FIX ME")},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/black-dot.png"
 				},
 				trafficData: {
 					description: "Austin Traffic Incidents",
 					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json",
 					apiKeyName: "",
-					apiKey: ""
+					apiKey: "",
+					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLat: FIX ME")},
+					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLng: FIX ME")},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2015: {
 					description: "2015 Austin Traffic Fatalities",
@@ -53,7 +60,8 @@ var model = {
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
-					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;}
+					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
@@ -67,13 +75,18 @@ var model = {
 
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
-					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;}
+					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",
 					queryUrl: "https://data.austintexas.gov/resource/utgi-umz5.json",
 					apiKeyName: "$$app_token",
-					apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
+					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
+					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLat: FIX ME")},
+					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLng: FIX ME")},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
 				}
 			}
 		},
@@ -97,7 +110,10 @@ var model = {
 					description: "School Districs of Connecticut",
 					queryUrl: "https://data.ct.gov/resource/9k2y-kqxn.json?organization_type=Public%20School%20Districts&$$app_token=CGxaHQoQlgQSev4zyUh5aR5J3",
 					apiKeyName: "",
-					apiKey: ""
+					apiKey: "",
+					getLat: function(entry) {return (entry.location_1) ? entry.location_1.latitude : undefined;},
+					getLng: function(entry) {return (entry.location_1) ? entry.location_1.longitude : undefined;},
+					markerUrl: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
 				}
 			}
 		}
@@ -119,9 +135,12 @@ var model = {
 	getFullAddress: getFullAddress,
 	getGeocodeEndpoint: getGeocodeEndpoint,
 	getKnownPlaces: getKnownPlaces,
+	getLat: getLat,
+	getLng: getLng,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
 	getMapZoom: getMapZoom,
+	getMarkerUrl: getMarkerUrl,
 	getPlace: getPlace,
 	getPlaceCoord: getPlaceCoord,
 	getCity: getCity,
@@ -436,6 +455,28 @@ function getKnownPlaces() {
 	return this.dynamic.knownPlaces;
 }
 
+// Function: getLat
+// Usage: var latitude = getLat(jsonEntry, "trafficFatalities2016");
+// -----------------------------------------------------------------
+// For a given object, return the latitude value therein according 
+// to data source schema.
+
+function getLat(entry, dataSource) {
+	var place = this.getPlace();
+	return this.places[place].dataSources[dataSource].getLat(entry);
+}
+
+// Function: getLng
+// Usage: var longitude = getLng(jsonEntry, "trafficFatalities2016");
+// -----------------------------------------------------------------
+// For a given object, return the longitude value therein according 
+// to data source schema.
+
+function getLng(entry, dataSource) {
+	var place = this.getPlace();
+	return this.places[place].dataSources[dataSource].getLng(entry);
+}
+
 // Function: getMapHtmlClass
 // Usage: var htmlClass = getMapHtmlClass();
 // ---------------------------------------------------------------------
@@ -488,6 +529,24 @@ function getMapZoom(place) {
 	var result = this.places[place].mapOptions.zoom;
 	if (!result) {
 		console.log("model.getMapZoom: Unknown place:", place);
+	}
+	return result;
+}
+
+// Function: getMarkerUrl
+// Usage: var markerUrl = getMarkerUrl("trafficFatalities2016");
+// -------------------------------------------------------------------
+// Returns the Google maps marker icon url to use for a given data source.
+//
+// e.g., http://maps.google.com/mapfiles/ms/icons/blue-dot.png
+
+function getMarkerUrl(dataSource) {
+	console.log("getMarkerUrl");
+	var result = this.places[this.getPlace()].dataSources[dataSource].markerUrl;	
+	if (!result) {
+		console.log("No marker url for this data source  " + dataSource);
+		console.log("Will use default marker:", this.defaultMarkerUrl);
+		result = this.defaultMarkerUrl;
 	}
 	return result;
 }

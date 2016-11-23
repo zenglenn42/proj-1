@@ -19,15 +19,15 @@ $(document).ready(initMVC);
 function initMVC() {
 	console.log("initMVC");
 
+	// Run model unit tests for sanity.  We'll comment this out in production.
+	//(model.unitTests()) ? console.log("model.unitTests() passed") :
+	//                      console.log("model.unitTests() failed");
+
 	var place = "austin";
 	var dataSource = "trafficFatalities2016";
 
 	// Initialize model.
 	model.init(place);
-
-	// Run model unit tests for sanity.  We'll comment this out in production.
-	(model.unitTests()) ? console.log("model.unitTests() passed") :
-	                      console.log("model.unitTests() failed");
 
 	// Initialize view.
 	vInit(model);
@@ -72,6 +72,7 @@ function loadData(map, model, dataSource) {
 
 	var position;
 	switch (dataSource) {
+		case "schoolDistricts":
 		case "trafficFatalities2015":
 		case "trafficFatalities2016": {
 				$.getJSON(dataSourceUrl, function(response) {
@@ -104,8 +105,8 @@ function loadData(map, model, dataSource) {
 						//		.. /* lat/lng schema varies by data source */
 						//	}
 
-						var lat = model.places["austin"].dataSources[dataSource].getLat(entry);
-						var lng = model.places["austin"].dataSources[dataSource].getLng(entry);
+						var lat = model.getLat(entry, dataSource);
+						var lng = model.getLng(entry, dataSource);
 						console.log("(lat, lng)", "(" + lat + ", " + lng + ")");
 
 						if (lat && lng) {
@@ -114,14 +115,22 @@ function loadData(map, model, dataSource) {
 							// Add some interesting hover data as a 'title' for each marker that
 							// says a little about the circumstances of the fataility.
 
-							var date = entry.date.replace(/T00:00:00.000/, '');
-							if (entry.charge.toLowerCase() == "n/a") {
-								title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
-							} else {
-								title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+							switch (dataSource) {
+								case "trafficFatalities2015":
+								case "trafficFatalities2016":
+									var date = entry.date.replace(/T00:00:00.000/, '');
+									if (entry.charge.toLowerCase() == "n/a") {
+										title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
+									} else {
+										title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
+									}
+									break;
+								case "schoolDistricts":
+									title = entry.name;
+									break;
 							}
 							console.log(title);
-							placeMarker(map, position, title);
+							placeMarker(map, model, dataSource, position, title);
 						} else {
 
 							// This usually amounts to meta data about the other records
@@ -195,11 +204,13 @@ function geocodeAddress(geocoder, address, resultsMap) {
 	}
 }
 
-function placeMarker(map, positionLatLng, title) {
+function placeMarker(map, model, dataSource, positionLatLng, title) {
 	var marker = new google.maps.Marker({
 		map: map,
 		position: positionLatLng,
-		title: title
+		//animation: google.maps.Animation.DROP,
+		title: title,
+		icon: model.getMarkerUrl(dataSource)
 	});
 }
 
@@ -302,57 +313,6 @@ function getCoordinates(address) {
 	});
 	console.log(coordinates);
 	return coordinates;
-}
-
-// Function: cDemoSocrataExample
-// Usage: cDemoSocrataExample();
-// -----------------------------
-// Courtesy: http://jsfiddle.net/chrismetcalf/8m2Cs/
-//
-// Populate a google map with markers based upon lat/lng data from
-// a json record fetched from endpoint.
-
-function cDemoSocrataExample() {
-	// Intialize our map for the "demo" place.
-
-	var place = "connecticut";
-	var geoCoord = model.getPlaceCoord(place);
-	console.log("cDemoSocrataExample: geoCoord:", geoCoord);
-
-	var center = new google.maps.LatLng(geoCoord.lat, geoCoord.lng);
-
-	if (center === undefined) {
-		console.log("cDemoSocrataExample: Google maps api probably not getting loaded properly.");
-		return;
-	} else {
-
-		// Programmatically append a div for our demo map to our map container.
-
-		var mapDiv = vMakeMapDiv(place);
-		$(".map-container").empty();
-		$(".map-container").append(mapDiv);
-
-		var mapOptions = {
-			zoom: model.getMapZoom(place),
-			center: center
-		};
-		console.log(mapOptions);
-		var map = new google.maps.Map(document.getElementById(model.getMapHtmlId(place)), mapOptions);
-
-		// Construct the catalog query string
-		url = model.getEndpointUrl(place, "schoolDistricts");
-
-		// Retrieve our data and plot it
-		$.getJSON(url, function initMap(data, textstatus) {
-			console.log(data);
-			$.each(data, function(i, entry) {
-				var marker = new google.maps.Marker({
-						position: new google.maps.LatLng(entry.location_1.latitude, entry.location_1.longitude),
-						map: map,
-						title: location.name});
-			});
-		});
-	}
 }
 
 //---------------------------------------------------------------------------
