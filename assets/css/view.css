@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+//*----------------------------------------------------------------------------
 // File: view.css
 //
 // This file contains project-specific styling for the view.
@@ -7,6 +7,17 @@
 
 body {
     font-family: 'Raleway', sans-serif;
+    background: #322046;
+}
+
+/* Wow, all of a sudden, scaffolding.less from twitter bootstrap css is
+ * forcing the background to white and not respecting the body styling
+ * just above.  I see multiple threads about this.  No idea why this
+ * started happening.
+ *
+ * To win the fight, we need to be a bit more specific.
+ */
+html body {
     background: #322046;
 }
 
@@ -24,8 +35,14 @@ body {
     width: 640px;
 }
 
+/* Adding a black background just in case the styling devolves to
+ * white background and causes foreground white text to 'disappear'
+ * like it did earlier today.  This will give us adequate contrast 
+ * so text can still be read in a degraded css situation.
+ */
 #map-status {
     color: white;
+    background-color: black;
     font-size: 1.5em;
 }
 
@@ -101,6 +118,10 @@ body {
     width: 350px;
 }
 
+#trafficSignalsOnFlash-button {
+    width: 350px;
+}
+
 #reset-button {
     width: 350px;
     background-color: #b295ba;
@@ -118,6 +139,10 @@ body {
     }
 
     #traffic2016-button {
+        width: 450px;
+    }
+
+    #trafficSignalsOnFlash-button {
         width: 450px;
     }
 
@@ -193,6 +218,10 @@ body {
         width: 400px;
     }
 
+    #trafficSignalsOnFlash-button {
+        width: 400px;
+    }
+
     #reset-button {
         width: 400px;
     }
@@ -224,6 +253,10 @@ body {
     }
 
     #traffic2016-button {
+        width: 300px;
+    }
+
+    #trafficSignalsOnFlash-button {
         width: 300px;
     }
 

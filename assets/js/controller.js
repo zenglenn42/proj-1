@@ -73,6 +73,14 @@ function cInit(map, model, dataSource) {
 		loadData(map, model, "trafficFatalities2016");
 		return false;
 	});
+
+	$("#trafficSignalsOnFlash-button").on("click", function() {
+		console.log("clicked trafficSignalsOnFlash button");
+		var map = loadMap(model);
+		model.setPlace("austin");
+		loadData(map, model, "trafficSignalsOnFlash");
+		return false;
+	});
 }
 
 // Function: loadData
@@ -95,6 +103,7 @@ function loadData(map, model, dataSource) {
 	var position;
 	switch (dataSource) {
 		case "schoolDistricts":
+		case "trafficSignalsOnFlash":
 		case "trafficFatalities2015":
 		case "trafficFatalities2016": {
 				$.getJSON(dataSourceUrl, function(response) {

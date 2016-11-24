@@ -88,15 +88,13 @@ var model = {
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",
-					queryUrl: "https://data.austintexas.gov/resource/utgi-umz5.json",
+					queryUrl: "https://data.austintexas.gov/resource/utgi-umz5.json?",
 					apiKeyName: "$$app_token",
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
-					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLat: FIX ME")},
-					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficSignalsOnFlass.getLng: FIX ME")},
-					getMarkerTitle: function(entry) {
-						return "model.places.austin.dataSources.trafficSignalsOnFlash: FIXME";
-					},
+					getLat: function(entry) {return (entry.location) ? entry.location.coordinates[1] : undefined;},
+					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
+					getMarkerTitle: getMarkerTitleAustinLightsOnFlash,
 					markerUrl: "http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
 				}
 			}
@@ -578,11 +576,33 @@ function getMarkerTitle(entry, dataSource) {
 function getMarkerTitleFatalAustin(entry) {
 	console.log("model.getMarkerTitleFataAustin");
 	var date = entry.date.replace(/T00:00:00.000/, '');
+	var title;
 	if (entry.charge.toLowerCase() == "n/a") {
 		title = [ entry.location, entry.related, entry.type, date, entry.day, entry.time].join(", ");
 	} else {
 		title = [ entry.location, entry.related, entry.type, entry.charge, date, entry.day, entry.time].join(", ");
 	}
+	return title;
+}
+
+// Function: getMarkerTitleAustinLightsOnFlash
+// Usage: var markerText = getMarkerTitleAustinLightsOnFlash(jsonEntry);
+// ---------------------------------------------------------------------
+// Returns hover-over 'title' text to associate with the Google map marker
+// for Austin Traffic Lights On Flash endpoint.
+//
+// Typical marker text might look like:
+//
+// "E 15TH ST / BRAZOS ST, 2016-11-24 07:15:09"
+//
+// ... meaning signal light is flashing on E 15th at the cross street
+//     of Brazos as of 7:15am on November 24, 2016.
+
+function getMarkerTitleAustinLightsOnFlash(entry) {
+	console.log("model.getMarkerTitleAustinLightsOnFlash");
+	var date = entry.processed_datetime.replace(/T/, ' ');
+	var location = entry.location_name;
+	var title = [location, date].join(", ");
 	return title;
 }
 
