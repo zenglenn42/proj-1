@@ -16,7 +16,7 @@ var model = {
 			apiKey: "AIzaSyD4-iShS_FXpTaYoz6LjgU7Yosbu_cxjsU"
 		}
 	},
-	defaultMarkerUrl: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+	defaultMarkerUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
 	places: {
 		austin: {
 			appName: "Austin Aware",
@@ -45,7 +45,7 @@ var model = {
 					getMarkerTitle: function(entry) {
 						return "model.places.austin.dataSources.crimeData: FIXME";
 					},
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/black-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/black-dot.png"
 				},
 				trafficData: {
 					description: "Austin Traffic Incidents",
@@ -57,7 +57,7 @@ var model = {
 					getMarkerTitle: function(entry) {
 						return "model.places.austin.dataSources.trafficData.getMarkerTitle: FIXME";
 					},
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2015: {
 					description: "2015 Austin Traffic Fatalities",
@@ -68,7 +68,7 @@ var model = {
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
 					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;},
 					getMarkerTitle: getMarkerTitleFatalAustin,
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
@@ -84,7 +84,7 @@ var model = {
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
 					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
 					getMarkerTitle: getMarkerTitleFatalAustin,
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
 				},
 				trafficSignalsOnFlash: {
 					description: "Traffic Signals on Flash",
@@ -95,7 +95,7 @@ var model = {
 					getLat: function(entry) {return (entry.location) ? entry.location.coordinates[1] : undefined;},
 					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
 					getMarkerTitle: getMarkerTitleAustinLightsOnFlash,
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"
 				}
 			}
 		},
@@ -126,7 +126,7 @@ var model = {
 						title = entry.name; // This corresponds to the School District name.
 						return title;
 					},
-					markerUrl: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
 				}
 			}
 		}
