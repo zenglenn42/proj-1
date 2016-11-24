@@ -1,4 +1,4 @@
-//*----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------
 // File: view.css
 //
 // This file contains project-specific styling for the view.
@@ -7,18 +7,7 @@
 
 body {
     font-family: 'Raleway', sans-serif;
-    background: #322046;
-}
-
-/* Wow, all of a sudden, scaffolding.less from twitter bootstrap css is
- * forcing the background to white and not respecting the body styling
- * just above.  I see multiple threads about this.  No idea why this
- * started happening.
- *
- * To win the fight, we need to be a bit more specific.
- */
-html body {
-    background: #322046;
+    background-color: #322046;
 }
 
 /* Map area */
@@ -43,7 +32,7 @@ html body {
 #map-status {
     color: white;
     background-color: black;
-    font-size: 1.5em;
+    font-size: 1.7em;
 }
 
 /* Title heading */
@@ -58,6 +47,11 @@ html body {
     background-size: cover;
     background-position: top center;
     opacity: 0.7;
+}
+
+#jumbotron-place {
+    background-color: rgba(128, 128, 128, .6);
+    color: white;
 }
 
 /* Dropdown Button */
