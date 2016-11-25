@@ -134,9 +134,17 @@ function loadData(map, model, dataSource) {
 							var title = model.getMarkerTitle(entry, dataSource);
 							console.log(title);
 
+							// Add a character label to our markers so if they share the
+							// same map, we can differentiate them better
+							//
+							// e.g., dangerous dogs may have a "D" while fatality sites and "X"
+
+							var label = model.getMarkerLabel(entry, dataSource);
+							console.log(label);
+
 							// Position a single marker on the map.
 
-							placeMarker(map, model, dataSource, position, title);
+							placeMarker(map, model, dataSource, position, title, label);
 
 						} else {
 
@@ -209,12 +217,29 @@ function geocodeAddress(geocoder, address, resultsMap) {
 	}
 }
 
-function placeMarker(map, model, dataSource, positionLatLng, title) {
+function placeMarker(map, model, dataSource, positionLatLng, title, label) {
 	var marker = new google.maps.Marker({
 		map: map,
 		position: positionLatLng,
-		//animation: google.maps.Animation.DROP,
 		title: title,
+
+		// At first I thought this was cool, but then decided it was gimmicky.
+		// -------------------------------------------------------------------
+		//animation: google.maps.Animation.DROP,
+
+		// This will be a nice feature once we have new-style Google map markers.
+		// With the retro markers we're using, the marker label ends up not 
+		// not centered (lands just below center point of circular area).
+		// This is a visual distraction, so I'm commenting this out for now.
+		//
+		// We're using the markers documented here for now:
+		//
+		// 	http://mabp.kiev.ua/2010/01/12/google-map-markers/
+		//
+		// Not sure if there is a more legit catalog of such things.
+		// -------------------------------------------------------------------
+		//label: label,
+
 		icon: model.getMarkerUrl(dataSource)
 	});
 }

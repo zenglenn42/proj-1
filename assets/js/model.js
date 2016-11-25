@@ -47,13 +47,22 @@ var model = {
 					getLat: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[0] : undefined;},
 					getLng: function(entry) {return (entry.location_1) ? entry.location_1.coordinates[1] : undefined;},
 					getMarkerTitle: getMarkerTitleFatalAustin,
-					markerUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+					getMarkerLabel: function() {return ""},
+
+					// Strangely, I'm finding Google map marker documentation scarce for their
+					// predefined symbols.  Found these resources using, um, Google:
+					//
+					// See: http://mabp.kiev.ua/2010/01/12/google-map-markers/
+					// See: http://stackoverflow.com/questions/19142242/what-are-the-filenames-of-new-colored-google-maps-markers
+
+					//markerUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+					markerUrl: "http://maps.google.com/mapfiles/marker_white.png"
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
-					queryUrl: "https://data.austintexas.gov/resource/vn6k-4eq5.json",
-					apiKeyName: "",
-					apiKey: "",
+					queryUrl: "https://data.austintexas.gov/resource/vn6k-4eq5.json?",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
 					// Huh, seems to work with out app_token.  Getting 404 otherwise.
 					//
 					//apiKeyName: "$$app_token",
@@ -63,6 +72,8 @@ var model = {
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
 					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
 					getMarkerTitle: getMarkerTitleFatalAustin,
+					getMarkerLabel: function() {return ""},
+					//markerUrl: "http://maps.google.com/mapfiles/marker_white.png"
 					markerUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
 				},
 				trafficSignalsOnFlash: {
@@ -74,7 +85,9 @@ var model = {
 					getLat: function(entry) {return (entry.location) ? entry.location.coordinates[1] : undefined;},
 					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
 					getMarkerTitle: getMarkerTitleAustinLightsOnFlash,
-					markerUrl: "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+					getMarkerLabel: function() {return "F"},
+					//markerUrl: "https://maps.google.com/mapfiles/ms/icons/orange.png"
+					markerUrl: "http://maps.google.com/mapfiles/marker_orangeF.png"
 				},
 				austinDangerousDogs: {
 					// See: https://dev.socrata.com/foundry/data.austintexas.gov/h8x4-nvyi
@@ -86,7 +99,9 @@ var model = {
 					getLat: function(entry) {return (entry.location) ? entry.location.coordinates[1] : undefined;},
 					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
 					getMarkerTitle: getMarkerTitleAustinDangerousDogs,
-					markerUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+					getMarkerLabel: function() {return "D"},
+					//markerUrl: "https://maps.google.com/mapfiles/ms/icons/blue.png"
+					markerUrl: "http://maps.google.com/mapfiles/marker_brownD.png"
 				}
 
 				// Requires geocoding of street address.  See version 2.0 :-)
@@ -157,6 +172,7 @@ var model = {
 	getLng: getLng,
 	getMapHtmlClass: getMapHtmlClass,
 	getMapHtmlId: getMapHtmlId,
+	getMarkerLabel: getMarkerLabel,
 	getMarkerTitle: getMarkerTitle,
 	getMarkerTitleFatalAustin: getMarkerTitleFatalAustin,
 	getMapZoom: getMapZoom,
@@ -537,6 +553,27 @@ function getMapHtmlId(place, dataSource) {
 		result += "-" + dataSource;
 	}
 	return result;
+}
+
+// Function: getMarkerLabel
+// Usage: var label = getMarkerLabel(jsonEntry, "trafficFatalities2016");
+// -------------------------------------------------------------------------
+// For a given object, return the marker character label to render on
+// the Google map marker.
+//
+// For example, if someone is viewing the Austin Dangerous Dogs data
+// then the pin marker will have a "D" on it.  At some point, we'll be
+// have pin markers from different data sources on the same map and it would
+// be good to have an easy way to distinguish on marker from another
+// beyond having a good map legend.
+
+function getMarkerLabel(entry, dataSource) {
+	console.log("model.getMarkerLabel");
+	var place = this.getPlace();
+	// NB: I'm leaving entry as a parameter because some day, we may
+	//     want entry-specific markers to distinguish pitbull from poodle
+	//     for example.
+	return this.places[place].dataSources[dataSource].getMarkerLabel(entry);
 }
 
 // Function: getMarkerTitle
