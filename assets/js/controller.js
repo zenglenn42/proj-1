@@ -218,6 +218,8 @@ function geocodeAddress(geocoder, address, resultsMap) {
 }
 
 function placeMarker(map, model, dataSource, positionLatLng, title, label) {
+	var infoWindow = new google.maps.InfoWindow({content: title});
+
 	var marker = new google.maps.Marker({
 		map: map,
 		position: positionLatLng,
@@ -242,6 +244,10 @@ function placeMarker(map, model, dataSource, positionLatLng, title, label) {
 
 		icon: model.getMarkerUrl(dataSource)
 	});
+	
+	marker.addListener('click', function() {
+          infoWindow.open(map, marker);
+    });
 }
 
 // Function: dumpJsonData
