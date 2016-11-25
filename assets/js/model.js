@@ -35,30 +35,9 @@ var model = {
 				         // https://developers.google.com/maps/documentation/javascript/maxzoom
 			},
 			dataSources: {
-				crimeData: {
-					description: "APD Incident Data",
-					queryUrl: "https://data.austintexas.gov/resource/rkrg-9tez.json",
-					apiKeyName: "",
-					apiKey: "",
-					getLat: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLat: FIX ME")},
-					getLng: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLng: FIX ME")},
-					getMarkerTitle: function(entry) {
-						return "model.places.austin.dataSources.crimeData: FIXME";
-					},
-					markerUrl: "https://maps.google.com/mapfiles/ms/icons/black-dot.png"
-				},
-				trafficData: {
-					description: "Austin Traffic Incidents",
-					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json",
-					apiKeyName: "",
-					apiKey: "",
-					getLat: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLat: FIX ME")},
-					getLng: function(entry) {console.log("model.places.austin.dataSources.trafficData.getLng: FIX ME")},
-					getMarkerTitle: function(entry) {
-						return "model.places.austin.dataSources.trafficData.getMarkerTitle: FIXME";
-					},
-					markerUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-				},
+				// For a directory of open data portals for the City of Austin,
+				// see: https://data.austintexas.gov/browse
+
 				trafficFatalities2015: {
 					description: "2015 Austin Traffic Fatalities",
 					queryUrl: "https://data.austintexas.gov/resource/i3kd-c47g.json?",
@@ -96,7 +75,33 @@ var model = {
 					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
 					getMarkerTitle: getMarkerTitleAustinLightsOnFlash,
 					markerUrl: "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"
+				},
+				austinDangerousDogs: {
+					// See: https://dev.socrata.com/foundry/data.austintexas.gov/h8x4-nvyi
+					description: "Austin Dangerous Dogs",
+					queryUrl: "https://data.austintexas.gov/resource/h8x4-nvyi.json?",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
+					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
+					getLat: function(entry) {return (entry.location) ? entry.location.coordinates[1] : undefined;},
+					getLng: function(entry) {return (entry.location) ? entry.location.coordinates[0] : undefined;},
+					getMarkerTitle: getMarkerTitleAustinDangerousDogs,
+					markerUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
 				}
+
+				// Requires geocoding of street address.  See version 2.0 :-)
+				//crimeData: {
+				//	description: "APD Incident Data",
+				//	queryUrl: "https://data.austintexas.gov/resource/rkrg-9tez.json",
+				//	apiKeyName: "",
+				//	apiKey: "",
+				//	getLat: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLat: FIX ME")},
+				//	getLng: function(entry) {console.log("model.places.austin.dataSources.crimeData.getLng: FIX ME")},
+				//	getMarkerTitle: function(entry) {
+				//		return "model.places.austin.dataSources.crimeData: FIXME";
+				//	},
+				//	markerUrl: "https://maps.google.com/mapfiles/ms/icons/black-dot.png"
+				//},
 			}
 		},
         connecticut: { // Connecticut school districts: http://jsfiddle.net/chrismetcalf/8m2Cs/
@@ -606,6 +611,28 @@ function getMarkerTitleAustinLightsOnFlash(entry) {
 	return title;
 }
 
+// Function: getMarkerTitleAustinDangerousDogs
+// Usage: var markerText = getMarkerTitleAustinDangerousDogs(jsonEntry);
+// ---------------------------------------------------------------------
+// Returns hover-over 'title' text to associate with the Google map marker
+// for Austin Dangerous Dogs endpoint.
+//
+// Typical marker text might look like:
+//
+// "E 15TH ST / BRAZOS ST, 2016-11-24 07:15:09"
+//
+// ... meaning signal light is flashing on E 15th at the cross street
+//     of Brazos as of 7:15am on November 24, 2016.
+
+function getMarkerTitleAustinDangerousDogs(entry) {
+	console.log("model.getMarkerTitleAustinDangerousDogs");
+	var address = entry.address;
+	var ownerName = "Owner: " + entry.first_name + " " + entry.last_name;
+	var dogDesc = entry.description_of_dog;
+	var title = [address, ownerName, dogDesc].join(", ");
+	return title;
+}
+
 // Function: getMapZoom
 // Usage: var mapZoom = getMapZoom(place);
 // ---------------------------------------------------------------------
@@ -816,7 +843,7 @@ function unitTests() {
 
 	// Second unit test.
 	var dataSources = this.getDataSources("austin");
-	if (dataSources.length !== 5) {
+	if (dataSources.length !== 4) {
 		result = false;
 		console.log("model.unitTests: failed model.getDataSources");
 	} else {
@@ -831,8 +858,8 @@ function unitTests() {
 	}
 
 	// Fourth unit test.
-	var url = this.getEndpointUrl("austin", "crimeData");
-	if (url !== "https://data.austintexas.gov/resource/rkrg-9tez.json") {
+	var url = this.getEndpointUrl("austin", "trafficFatalities2015");
+	if (url !== "https://data.austintexas.gov/resource/i3kd-c47g.json?$$app_token=g9GkfcLndwliKunxNyYve0Nnv") {
 		result = false;
 		console.log("model.unitTests: failed getEndpointUrl: ", url);
 	}

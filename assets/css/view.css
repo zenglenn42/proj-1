@@ -32,7 +32,7 @@ body {
 #map-status {
     color: white;
     background-color: black;
-    font-size: 1.7em;
+    font-size: 1.5em;
 }
 
 /* Title heading */
@@ -47,6 +47,7 @@ body {
     background-size: cover;
     background-position: top center;
     opacity: 0.7;
+    margin-bottom: 10px;
 }
 
 #jumbotron-place {
@@ -116,6 +117,10 @@ body {
     width: 350px;
 }
 
+#austinDangerousDogs-button {
+    width: 350px;
+}
+
 #reset-button {
     width: 350px;
     background-color: #b295ba;
@@ -137,6 +142,10 @@ body {
     }
 
     #trafficSignalsOnFlash-button {
+        width: 450px;
+    }
+
+    #austinDangerousDogs-button {
         width: 450px;
     }
 
@@ -216,6 +225,10 @@ body {
         width: 400px;
     }
 
+    #austinDangerousDogs-button {
+        width: 400px;
+    }
+
     #reset-button {
         width: 400px;
     }
@@ -251,6 +264,10 @@ body {
     }
 
     #trafficSignalsOnFlash-button {
+        width: 300px;
+    }
+
+    #austinDangerousDogs-button {
         width: 300px;
     }
 
