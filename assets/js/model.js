@@ -347,7 +347,7 @@ function getDataSourceDescription(dataSource) {
 //        var dataSource = getDataSourceFromDescription(desc, "austin");
 //        and dataSource == "trafficFatalities2016"
 // -------------------------------------------------------------------
-// This method performs a reverse lookup of a dataSource based upon it's description
+// This method performs a reverse lookup of a dataSource based upon its description
 // and place.  This will be handy for our dropdown-selection button which is
 // programmed with descriptive text, but needs to map to a specific data source.
 //
