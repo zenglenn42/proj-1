@@ -263,11 +263,12 @@ body {
     }
 
     .dropdown {
-        margin: 12px;
+        margin: 2px;
         padding: 5px;
     }
 
     #traffic2015-button {
+        margin-top: 32px;
         width: 300px;
     }
 
