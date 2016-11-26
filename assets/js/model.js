@@ -102,6 +102,19 @@ var model = {
 					getMarkerLabel: function() {return "D"},
 					//markerUrl: "https://maps.google.com/mapfiles/ms/icons/blue.png"
 					markerUrl: "http://maps.google.com/mapfiles/marker_brownD.png"
+				},
+				austinFoundPets: {
+					// See: https://data.austintexas.gov/Government/Austin-Animal-Center-Found-Pets-Map/hye6-gvq2
+					description: "Austin Found Pets",
+					queryUrl: "https://data.austintexas.gov/resource/hye6-gvq2.json?",
+					apiKeyName: "$$app_token",
+					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
+					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
+					getLat: function(entry) {return (entry.location) ? entry.location.latitude : undefined;},
+					getLng: function(entry) {return (entry.location) ? entry.location.longitude : undefined;},
+					getMarkerTitle: getMarkerTitleAustinFoundPets,
+					getMarkerLabel: function() {return ""},
+					markerUrl: "http://maps.google.com/mapfiles/marker_purple.png"
 				}
 
 				// Requires geocoding of street address.  See version 2.0 :-)
@@ -671,6 +684,31 @@ function getMarkerTitleAustinDangerousDogs(entry) {
 	var ownerName = "Owner: " + entry.first_name + " " + entry.last_name;
 	var dogDesc = entry.description_of_dog;
 	var title = [address, ownerName, dogDesc].join(", ");
+	return title;
+}
+
+// Function: getMarkerTitleAustinFoundPets
+// Usage: var markerText = getMarkerTitleAustinFoundPets(jsonEntry);
+// ---------------------------------------------------------------------
+// Returns hover-over 'title' text to associate with the Google map marker
+// for Austin Found Pets endpoint.
+//
+// Typical marker text might look like:
+//
+// "A738864, Dog, German Shepard Mix, Intake date: 11/22/2016, Image link ..."
+
+function getMarkerTitleAustinFoundPets(entry) {
+	console.log("model.getMarkerTitleAustinFoundPets");
+	var animalId = entry.animal_id;
+	var animalType = entry.type;
+	var looksLike = entry.looks_like;
+	var intakeDate = entry.intake_date.replace(/T00:00:00/, '');
+	var imageUrl = "<a href=" + entry.image.url + " target=" + '"_blank"' + "><h3>Image</h3></a>";
+	//var imageUrl = entry.image.url;
+	var sex = entry.sex;
+	var age = entry.age;
+	var title = [animalId, animalType, looksLike, intakeDate].join(", ");
+	title += " " + imageUrl;
 	return title;
 }
 

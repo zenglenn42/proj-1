@@ -89,6 +89,14 @@ function cInit(map, model, dataSource) {
 		loadData(map, model, "austinDangerousDogs");
 		return false;
 	});
+
+	$("#austinFoundPets-button").on("click", function() {
+		console.log("clicked austinFoundPets button");
+		var map = loadMap(model);
+		model.setPlace("austin");
+		loadData(map, model, "austinFoundPets");
+		return false;
+	});
 }
 
 // Function: loadData
@@ -112,6 +120,7 @@ function loadData(map, model, dataSource) {
 	switch (dataSource) {
 		case "schoolDistricts":
 		case "austinDangerousDogs":
+		case "austinFoundPets":
 		case "trafficSignalsOnFlash":
 		case "trafficFatalities2015":
 		case "trafficFatalities2016": {
