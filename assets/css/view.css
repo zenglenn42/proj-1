@@ -145,6 +145,7 @@ body {
 }
 
 /* Media queries */
+/*iPad viewport*/
 @media screen and (max-width: 768px) {
     .dropdown {
         margin-left: 120px;
@@ -175,7 +176,7 @@ body {
     }
 }
 
-/* Tablet landscape viewport */
+/* iPad landscape viewport */
 @media screen and (min-width: 768px)
             and (max-width: 1024px)
             and (orientation: landscape) {
@@ -191,7 +192,7 @@ body {
 
 }
 
-/* Phone landscape viewport */
+/* iPhone landscape viewport */
 @media screen
   and (device-width: 320px)
   and (device-height: 640px)
@@ -220,6 +221,7 @@ body {
     }
   }
 
+/*Intermediate device*/
 @media screen and (max-width: 468px) {
     h1 {
         font-size: 50px;
@@ -267,6 +269,7 @@ body {
     }
 }
 
+/*iPhone 6 viewport*/
 @media screen and (max-width: 320px) {
     h1 {
         font-size: 32px;
@@ -318,6 +321,7 @@ body {
     }
 }
 
+/*Secondary mobile phone viewport*/
 @media screen and (max-width: 270px) {
     h1 {
         font-size: 24px;
