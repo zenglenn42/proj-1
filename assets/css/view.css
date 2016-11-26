@@ -193,6 +193,10 @@ body {
     .dropdown {
         margin-left: 10px;
     }
+    .jumbotron{
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
   }
 
 @media screen and (max-width: 468px) {
@@ -207,6 +211,10 @@ body {
         width: 400px;
         padding: 10px;
         margin: 10px;
+    }
+    .jumbotron{
+        padding-top: 15px;
+        padding-bottom: 15px;
     }
 
     .dropdown {
@@ -249,9 +257,13 @@ body {
         height: 300px;
         margin: 0px;
     }
+    .jumbotron{
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 
     .dropdown {
-        margin: 2px;
+        margin: 12px;
         padding: 5px;
     }
 
