@@ -330,7 +330,7 @@ function loadMap(model) {
 
 	// Persist the map in the model so it can be easily referenced
 	// from callbacks (e.g., that reset the zoom level).
-	
+
 	model.setMap(map);
 
 	// Pass the map back to the caller.  It'll get used
@@ -449,5 +449,6 @@ function vMapCaption(str) {
 // Resets zoom level of map when 'reset zoom' button clicked.
 
 $(document).on("click", "#reset-button", function(){
-    location.reload(true);
+	console.log("reset-button callback called");
+	model.resetMapZoom();
 });
