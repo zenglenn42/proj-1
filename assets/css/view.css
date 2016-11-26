@@ -288,3 +288,40 @@ body {
         width: 300px;
     }
 }
+
+@media screen and (max-width: 270px) {
+    h1 {
+        font-size: 24px;
+    } 
+
+.map {
+        width: 250px;
+        height: 250px;
+    }
+
+    #map-container {
+        width: 250px;
+        height: 250px;
+        margin: 0px;
+    }
+    #traffic2015-button {
+        margin-top: 32px;
+        width: 250px;
+    }
+
+    #traffic2016-button {
+        width: 250px;
+    }
+
+    #trafficSignalsOnFlash-button {
+        width: 250px;
+    }
+
+    #austinDangerousDogs-button {
+        width: 250px;
+    }
+
+    #reset-button {
+        width: 250px;
+    }   
+}
