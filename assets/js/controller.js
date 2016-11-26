@@ -450,5 +450,5 @@ function vMapCaption(str) {
 
 $(document).on("click", "#reset-button", function(){
 	console.log("reset-button callback called");
-	model.resetMapZoom();
+	model.resetMap();
 });

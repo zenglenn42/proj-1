@@ -123,8 +123,8 @@ body {
 
 #reset-button {
     width: 350px;
-    background-color: #b295ba;
-
+    color: white;
+    background-color: #26365A;
 }
 
 /* Media queries */

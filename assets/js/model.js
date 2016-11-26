@@ -187,7 +187,7 @@ var model = {
 	init: init,
 	isKnownPlace: isKnownPlace,
 	setKnownPlaces: setKnownPlaces,
-	resetMapZoom: resetMapZoom,
+	resetMap: resetMap,
 	setMap: setMap,
 	setPlace: setPlace,
 	unitTests: unitTests
@@ -846,21 +846,27 @@ function isKnownPlace(placeStr) {
 	return result;
 }
 
-// Function: resetMapZoom()
-// Usage: model.resetMapZoom();
+// Function: resetMap()
+// Usage: model.resetMap();
 // ----------------------------
-// Restores the default zoom level for the current map.
+// Centers and restores map to default zoom level.
 
-function resetMapZoom() {
-	console.log("model.resetMapZoom");
+function resetMap() {
+	console.log("model.resetMap");
 	var map = this.getMap();
 	var place = this.getPlace();
-	console.log("model.resetMapZoom: place = ", place);
+	console.log("model.resetMap: place = ", place);
+
+	// Reset the zoom level to the original.
 
 	var defaultZoom = this.places[place].mapOptions.zoom;
-	console.log("model.resetMapZoom: zoom level = ", defaultZoom);
+	console.log("model.resetMap: zoom level = ", defaultZoom);
 	
+	// Reset the center of the map.
+
 	map.setZoom(defaultZoom);
+	var geoCoord = this.getPlaceCoord(place);
+	map.panTo({lat: geoCoord.lat, lng: geoCoord.lng});
 }
 
 // Function: setKnownPlaces
