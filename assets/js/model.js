@@ -176,6 +176,7 @@ var model = {
 	getBackgroundUrl: getBackgroundUrl,
 	getBackgroundImagePosition: getBackgroundImagePosition,
 	getDataSourceDescription: getDataSourceDescription,
+	getDataSourceFromDescription: getDataSourceFromDescription,
 	getDataSources: getDataSources,
 	getEndpointUrl: getEndpointUrl,
 	getEndpointUrlFromSelector: getEndpointUrlFromSelector,
@@ -337,6 +338,66 @@ function getDataSourceDescription(dataSource) {
 	if (!result) {
 		result = "No description for data source  " + dataSource;
 		console.log("model.getDataSourceDescription: Error missing description for dataSource: ", dataSource);
+	}
+	return result;
+}
+
+// Function: getDataSourceFromDescription
+// Usage: var desc = "2016 Austin Traffic Fatalities";
+//        var dataSource = getDataSourceFromDescription(desc, "austin");
+//        and dataSource == "trafficFatalities2016"
+// -------------------------------------------------------------------
+// This method performs a reverse lookup of a dataSource based upon it's description
+// and place.  This will be handy for our dropdown-selection button which is
+// programmed with descriptive text, but needs to map to a specific data source.
+//
+// TODO: Would be better to have proper error handling than all these console logs.
+//       Will be learning about try/catch soon.
+
+function getDataSourceFromDescription(desc, aPlace) {
+	console.log("getDataSourceFromDescription");
+	var result;
+	var place = aPlace;
+
+	// Validate input.
+	if (!place) {
+		place = this.getPlace();
+	}
+	if (!desc || !place) {
+		console.log("model.getDataSourceFromDescription: Error: input desc and/or input place are not defined.  Punting.");
+		return result;
+	}
+	if (!this.isKnownPlace(place)) {
+		console.log("model.getDataSourceFromDescription: Error: Unable to lookup data sources for unknown place:", place);
+		return result;
+	}
+	if (typeof desc !== "string") {
+		console.log("model.getDataSourceFromDescription: Error: Expecting typeof 'string' for desc argument:", desc, "Got ", typeof desc);
+		return result;
+	}
+
+	// Locate the dataSources in the model for this place.
+	var dataSources = this.places[place].dataSources;
+	if (!dataSources) {
+		console.log("model.getDataSourceFromDescription: Warning: dataSources is undefined for place:", place);
+		return result;
+	}
+
+	// Iterate over the dataSources looking for one matching the description string we passed in.
+	for (var dataSource in dataSources) {
+		console.log("dataSource", dataSource);
+		console.log("desc", desc);
+		console.log("dataSource.description", dataSources[dataSource].description);
+		if (desc === dataSources[dataSource].description) {
+			result = dataSource;
+			console.log("model.getDataSourceFromDescription: Found match:", place, result);
+			break;
+		}
+	} 
+	if (!result) {
+		console.log("model.getDataSourceFromDescription: Warning: No mataching dataSource with description:" + desc + " for place", place);
+	} else {
+		console.log("model.getDataSourceFromDescription: dataSource:", result);
 	}
 	return result;
 }
@@ -1061,6 +1122,23 @@ function unitTests() {
 	if (this.getBackgroundImagePosition() !== "top center") {
 		result = false;
 		console.log("model.unitTests: failed getBackgroundImagePosition");
+	}
+
+	// Twelth unit test.
+	var actualDS = this.getDataSourceFromDescription("2015 Austin Traffic Fatalities", "austin");
+	var expectDS = "trafficFatalities2015";
+	if (actualDS !== expectDS) {
+		result = false;
+		console.log("model.unitTests: failed to find valid dataSource via getDataSourceFromDescription");
+	} else {
+		actualDS = this.getDataSourceFromDescription("Bogus Description Should Fail", "austin");
+		if (actualDS) {
+			result = false;
+			console.log("model.unitTests: actualDS", actualDS);
+			console.log("model.unitTests: failed by finding a dataSource for a bogus description via getDataSourceFromDescription");
+		} else {
+			result = true;
+		}
 	}
 
 	return result;
