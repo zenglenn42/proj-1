@@ -153,6 +153,7 @@ var model = {
 	},
 	dynamic: {
 		place: "",
+		map: undefined,
 		knownPlaces: []
 	},
 
@@ -177,6 +178,7 @@ var model = {
 	getMarkerTitleFatalAustin: getMarkerTitleFatalAustin,
 	getMapZoom: getMapZoom,
 	getMarkerUrl: getMarkerUrl,
+	getMap: getMap,
 	getPlace: getPlace,
 	getPlaceCoord: getPlaceCoord,
 	getCity: getCity,
@@ -185,6 +187,8 @@ var model = {
 	init: init,
 	isKnownPlace: isKnownPlace,
 	setKnownPlaces: setKnownPlaces,
+	resetMapZoom: resetMapZoom,
+	setMap: setMap,
 	setPlace: setPlace,
 	unitTests: unitTests
 };
@@ -705,6 +709,25 @@ function getMarkerUrl(dataSource) {
 	return result;
 }
 
+// Function: getMap
+// Usage: var map = getMap();
+// ---------------------------------
+// Returns the map currently on display.
+//
+// This is typically configured at the beginning of the app with a call to
+// model.setMap(someGoogleMap).
+
+function getMap() {
+	console.log("model.getMap");
+
+	var result = this.dynamic.map;
+	if (!result) {
+		console.log("model.getMap: Warning: Returning null/undefined map.");
+		console.log("Do you need to run model.setMap(map) first?");
+	}
+	return result;
+}
+
 // Function: getPlace
 // Usage: var placeKey = getPlace();
 // ---------------------------------
@@ -823,6 +846,23 @@ function isKnownPlace(placeStr) {
 	return result;
 }
 
+// Function: resetMapZoom()
+// Usage: model.resetMapZoom();
+// ----------------------------
+// Restores the default zoom level for the current map.
+
+function resetMapZoom() {
+	console.log("model.resetMapZoom");
+	var map = this.getMap();
+	var place = this.getPlace();
+	console.log("model.resetMapZoom: place = ", place);
+
+	var defaultZoom = this.places[place].mapOptions.zoom;
+	console.log("model.resetMapZoom: zoom level = ", defaultZoom);
+	
+	map.setZoom(defaultZoom);
+}
+
 // Function: setKnownPlaces
 // Usage: var arrayPlaces = model.setKnownPlaces();
 // ---------------------------------------------------------------------
@@ -838,6 +878,18 @@ function setKnownPlaces() {
 	result.sort();
 	this.dynamic.knownPlaces = result;
 	return result;
+}
+
+// Function: setMap
+// Usage: model.setMap(googleMap);
+// ---------------------------------------------------------------------
+// Attempts to update the model with the current google map of interest.
+// This will allow references from within callbacks so things like zoom
+// level can be mutated.
+
+function setMap(googleMap) {
+	console.log("model.setMap");
+	this.dynamic.map = googleMap;
 }
 
 // Function: setPlace
