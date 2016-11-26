@@ -33,6 +33,7 @@ body {
     color: white;
     background-color: black;
     font-size: 1.5em;
+    text-align: center;
 }
 
 /* Title heading */
@@ -77,6 +78,7 @@ body {
     display: inline-block;
     padding: 10px;
     margin: 10px;
+    margin-bottom: 0px;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -94,6 +96,12 @@ body {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+}
+
+.button-text {
+    background-color: rgba(50, 32, 70, 0.2);
+    font-size: 1.2em;
+    color: white;
 }
 
 /* Change color of dropdown links on hover */
@@ -125,6 +133,7 @@ body {
     width: 350px;
     color: white;
     background-color: #26365A;
+    font-size: 1.2em;
 }
 
 /* Media queries */
