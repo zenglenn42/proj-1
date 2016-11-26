@@ -20,7 +20,7 @@ var model = {
 	places: {
 		austin: {
 			appName: "Austin Aware",
-			backgroundUrl: "http://www.alteredperspectives.us/wp-content/uploads/2011/12/DW_Austin_Skyline_Panorama-11.jpg",
+			backgroundUrl: "./assets/img/austin-aware-1400x403.jpg",
 			backgroundImagePosition: "top center",
 			location: {
           		lat: 30.27504,

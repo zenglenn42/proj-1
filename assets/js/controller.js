@@ -24,7 +24,6 @@ function initMVC() {
 	//                      console.log("model.unitTests() failed");
 
 	var place = "austin";
-	var dataSource = "trafficFatalities2016";
 
 	// Initialize model.
 	model.init(place);
@@ -34,7 +33,13 @@ function initMVC() {
 
 	// Initialize map.
 	var map = loadMap(model);
-	loadData(map, model, dataSource);
+
+	// Seed the dataSource, but don't display any data by default.
+	// Let the user decide what they want, rather than forcing some
+	// default upon them.
+
+	var dataSource = "trafficFatalities2016";
+	//loadData(map, model, dataSource);
 
 	// Initialize controller.
 	cInit(map, model, dataSource);
@@ -45,18 +50,13 @@ function initMVC() {
 //---------------------------------------------------------------------------
 
 // Function: cInit
-// Usage: cInit();
-// ---------------
+// Usage: cInit(map, model);
+// -------------------------
 // Initializes the controller by registering various callback functions
 // that come to life in response to user input of some kind.
 
-function cInit(map, model, dataSource) {
+function cInit(map, model) {
 	console.log("cInit");
-
-	// TODO: Optimization
-	//
-	// Could use some state to prevent reloading an already loaded
-	// map if dataSource has not changed.
 
 	$("#traffic2015-button").on("click", function() {
 		console.log("clicked 2015 button");
@@ -96,6 +96,11 @@ function cInit(map, model, dataSource) {
 		model.setPlace("austin");
 		loadData(map, model, "austinFoundPets");
 		return false;
+	});
+
+	$(document).on("click", "#reset-button", function(){
+		console.log("reset-button callback called");
+		model.resetMap();
 	});
 }
 
@@ -452,12 +457,3 @@ function vMapCaption(str) {
 	$(textArea).html(str);
 }
 
-// Function: locationReload
-// Usage: location.reload(true)
-// ------------------------------
-// Resets zoom level of map when 'reset zoom' button clicked.
-
-$(document).on("click", "#reset-button", function(){
-	console.log("reset-button callback called");
-	model.resetMap();
-});
