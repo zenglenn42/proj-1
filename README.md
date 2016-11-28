@@ -1,3 +1,3 @@
 # Austin Aware
 
-![alt tag](Austin Aware PDF.pdf)
+![alt tag](assets/img/austin-aware-dev.png)
