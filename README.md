@@ -1,3 +1,3 @@
 # Austin Aware
 
-![alt tag](Austin%20Aware%20PDF.pdf)
+![alt tag](Austin Aware PDF.pdf)
