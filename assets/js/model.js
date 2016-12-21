@@ -60,14 +60,12 @@ var model = {
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
-					queryUrl: "https://data.austintexas.gov/resource/vn6k-4eq5.json?",
+					// The following is the advertised home for this data:
+					// https://data.austintexas.gov/Public-Safety/November-2016-YTD-Fatalities/2cx2-y3ed"
+					// however the soda endpoint is as given below:
+					queryUrl: "https://data.austintexas.gov/resource/78uj-6r93.json?",
 					apiKeyName: "$$app_token",
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
-					// Huh, seems to work with out app_token.  Getting 404 otherwise.
-					//
-					//apiKeyName: "$$app_token",
-					//apiKey: "g9GkfcLndwliKunxNyYve0Nnv"
-
 					// Normalize the fetching of lat/lng from schemas that vary across dataSources.
 					getLat: function(entry) {return (entry.y_coord) ? entry.y_coord : undefined;},
 					getLng: function(entry) {return (entry.x_coord) ? entry.x_coord : undefined;},
