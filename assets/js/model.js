@@ -60,9 +60,11 @@ var model = {
 				},
 				trafficFatalities2016: {
 					description: "2016 Austin Traffic Fatalities",
+
 					// The following is the advertised home for this data:
 					// https://data.austintexas.gov/Public-Safety/November-2016-YTD-Fatalities/2cx2-y3ed"
 					// however the soda endpoint is as given below:
+
 					queryUrl: "https://data.austintexas.gov/resource/78uj-6r93.json?",
 					apiKeyName: "$$app_token",
 					apiKey: "g9GkfcLndwliKunxNyYve0Nnv",
